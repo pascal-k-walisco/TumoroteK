@@ -19,7 +19,7 @@
 	</pluginRepositories>
 
 	<properties>
-		<skip-test>false</skip-test>
+		<skip-test>true</skip-test>
 	</properties>
 
 	<dependencies>

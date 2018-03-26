@@ -674,6 +674,9 @@ public class PrelevementController extends AbstractObjectTabController
          getListeRegion().setOpen(false);
 
          showStatic(false);
+      } else {
+    	  // Emission de mails automatiques vers ARC du centre préleveur
+    	  
       }
    }
 

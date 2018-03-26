@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <copy file="/home/pkhieu/workspace-tk/TumoroteK/tumorotek-install/src/site/markdown/note-version.md" tofile="/home/pkhieu/workspace-tk/TumoroteK/tumorotek-install/src/site/markdown/index.md"/>
+</target>
+</project>
