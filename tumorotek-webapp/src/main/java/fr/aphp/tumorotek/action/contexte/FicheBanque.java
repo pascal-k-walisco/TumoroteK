@@ -1855,6 +1855,17 @@ public class FicheBanque extends AbstractFicheCombineController
          if("BTO".equals(selectedContexte.getNom())){
             defMaladieBox.setDisabled(true);
             defMaladieBox.setChecked(false);
+         }else if("OFSEP".equals(selectedContexte.getNom())){
+        	// Pour le contexte OFSEP, le niveau Maladie est désactivé
+        	defMaladieBox.setDisabled(true);
+        	defMaladieBox.setChecked(false);
+    		defautLibBox.setValue(null);
+    		Clients.clearWrongValue(defautLibBox);
+            defautLibBox.setDisabled(true);
+         }else{
+        	defMaladieBox.setDisabled(false);
+        	defMaladieBox.setChecked(true);
+            defautLibBox.setDisabled(false);
          }
          Clients.clearWrongValue(contexteBox);
       }else{
