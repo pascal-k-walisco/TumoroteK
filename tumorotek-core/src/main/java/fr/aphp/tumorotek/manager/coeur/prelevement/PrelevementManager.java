@@ -683,4 +683,24 @@ public interface PrelevementManager
     * @since 2.1
     */
    List<Prelevement> findByCodeInPlateformeManager(String code, Plateforme pf);
+   
+   /**
+    * Renvoie tous les prélèvements saisis (créé en base) depuis les dernières 48h d'une banque par un utilisateur
+    * les collections d'une plateforme passée en paramètre.
+    * @param banque
+    * @param utilisateur
+    * @return liste prélèvement
+    * @since 2.2
+    */
+   List<Prelevement> findAllCreatedDuringLast48hByBankAndUser(Banque banque, Utilisateur utilisateur);
+   
+   /**
+    * Renvoie tous les prélèvements saisis (créé en base) depuis les dernières 48h d'une banque
+    * les collections d'une plateforme passée en paramètre.
+    * @param banque
+    * @return liste prélèvement
+    * @since 2.2
+    */
+   List<Prelevement> findAllCreatedDuringLast48hByBank(Banque banque);
+   
 }

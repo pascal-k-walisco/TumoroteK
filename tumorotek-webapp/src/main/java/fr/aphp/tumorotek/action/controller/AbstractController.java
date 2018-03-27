@@ -1576,6 +1576,21 @@ public abstract class AbstractController extends GenericForwardComposer<Componen
          return null;
       }
    }
+   
+   /**
+    * Retourne le controller de la fiche d'un dérivé.
+    * 
+    * @param event
+    * @return
+    */
+   public PrelevementController getPrelevementController(){
+      if(getMainWindow().isFullfilledComponent("prelevementPanel", "winPrelevement")){
+         return ((PrelevementController) getMainWindow().getMainTabbox().getTabpanels().getFellow("prelevementPanel")
+            .getFellow("winPrelevement").getAttributeOrFellow("winPrelevement$composer", true));
+      }else{
+         return null;
+      }
+   }
 
    /**
     * Modale window appelée pour choisir l'imprimante et le modèle d'impression.

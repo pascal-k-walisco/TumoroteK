@@ -36,6 +36,7 @@
 package fr.aphp.tumorotek.action.patient;
 
 import static fr.aphp.tumorotek.model.contexte.EContexte.BTO;
+import static fr.aphp.tumorotek.model.contexte.EContexte.OFSEP;
 import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
 
 import java.util.HashMap;
@@ -61,6 +62,9 @@ import fr.aphp.tumorotek.action.controller.AbstractObjectTabController;
 import fr.aphp.tumorotek.action.patient.bto.FichePatientEditBTO;
 import fr.aphp.tumorotek.action.patient.bto.FichePatientStaticBTO;
 import fr.aphp.tumorotek.action.patient.bto.ListePatientBTO;
+import fr.aphp.tumorotek.action.patient.ofsep.FichePatientEditOFSEP;
+import fr.aphp.tumorotek.action.patient.ofsep.FichePatientStaticOFSEP;
+import fr.aphp.tumorotek.action.patient.ofsep.ListePatientOFSEP;
 import fr.aphp.tumorotek.action.prelevement.PrelevementController;
 import fr.aphp.tumorotek.model.TKdataObject;
 import fr.aphp.tumorotek.model.coeur.patient.Patient;
@@ -110,6 +114,9 @@ public class PatientController extends AbstractObjectTabController
       if(BTO.equals(getCurrentContexte())){
          setStaticZulPath("/zuls/patient/bto/FichePatientStaticBTO.zul");
          setEditZulPath("/zuls/patient/bto/FichePatientEditBTO.zul");
+      }else if(OFSEP.equals(getCurrentContexte())){
+    	 setStaticZulPath("/zuls/patient/ofsep/FichePatientStaticOFSEP.zul");
+         setEditZulPath("/zuls/patient/ofsep/FichePatientEditOFSEP.zul");
       }else{
          setStaticZulPath("/zuls/patient/FichePatientStatic.zul");
          setEditZulPath("/zuls/patient/FichePatientEdit.zul");
@@ -133,6 +140,9 @@ public class PatientController extends AbstractObjectTabController
       if(BTO.equals(getCurrentContexte())){
          return ((FichePatientEditBTO) self.getFellow("divPatientEdit").getFellow("fwinPatientEditBTO")
             .getAttributeOrFellow("fwinPatientEditBTO$composer", true));
+      }else if(OFSEP.equals(getCurrentContexte())){
+    	  return ((FichePatientEditOFSEP) self.getFellow("divPatientEdit").getFellow("fwinPatientEditOFSEP")
+    	            .getAttributeOrFellow("fwinPatientEditOFSEP$composer", true));
       }else{
          return ((FichePatientEdit) self.getFellow("divPatientEdit").getFellow("fwinPatientEdit")
             .getAttributeOrFellow("fwinPatientEdit$composer", true));
@@ -144,7 +154,10 @@ public class PatientController extends AbstractObjectTabController
       if(BTO.equals(getCurrentContexte())){
          return ((FichePatientStaticBTO) self.getFellow("divPatientStatic").getFellow("fwinPatientStaticBTO")
             .getAttributeOrFellow("fwinPatientStaticBTO$composer", true));
-      }else{
+      }else if(OFSEP.equals(getCurrentContexte())){
+    	  return ((FichePatientStaticOFSEP) self.getFellow("divPatientStatic").getFellow("fwinPatientStaticOFSEP")
+  	            .getAttributeOrFellow("fwinPatientStaticOFSEP$composer", true));
+    }else{
          return ((FichePatientStatic) self.getFellow("divPatientStatic").getFellow("fwinPatientStatic")
             .getAttributeOrFellow("fwinPatientStatic$composer", true));
       }
@@ -155,6 +168,9 @@ public class PatientController extends AbstractObjectTabController
       if(BTO.equals(getCurrentContexte())){
          return ((ListePatientBTO) self.getFellow("listePatientBTO").getFellow("lwinPatientBTO")
             .getAttributeOrFellow("lwinPatientBTO$composer", true));
+      }else if(OFSEP.equals(getCurrentContexte())){
+         return ((ListePatientOFSEP) self.getFellow("listePatient").getFellow("lwinPatientOFSEP")
+            .getAttributeOrFellow("lwinPatientOFSEP$composer", true));
       }else{
          return ((ListePatient) self.getFellow("listePatient").getFellow("lwinPatient")
             .getAttributeOrFellow("lwinPatient$composer", true));
@@ -195,7 +211,12 @@ public class PatientController extends AbstractObjectTabController
          return ((FicheAnnotationInline) self.getFellow("divPatientEdit").getFellow("fwinPatientEditBTO")
             .getFellow("ficheTissuInlineAnnoPatient").getFellow("fwinAnnotationInline")
             .getAttributeOrFellow("fwinAnnotationInline$composer", true));
-      }else{
+      }else if(null != self.getFellow("divPatientEdit").getFellowIfAny("fwinPatientEditOFSEP")
+    	         && null != self.getFellow("divPatientEdit").getFellow("fwinPatientEditOFSEP").getFellow("ficheTissuInlineAnnoPatient")){
+          return ((FicheAnnotationInline) self.getFellow("divPatientEdit").getFellow("fwinPatientEditOFSEP")
+             .getFellow("ficheTissuInlineAnnoPatient").getFellow("fwinAnnotationInline")
+             .getAttributeOrFellow("fwinAnnotationInline$composer", true));
+       }else{
          return null;
       }
    }

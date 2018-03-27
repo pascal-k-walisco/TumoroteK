@@ -94,6 +94,7 @@ import fr.aphp.tumorotek.model.TKAnnotableObject;
 import fr.aphp.tumorotek.model.TKStockableObject;
 import fr.aphp.tumorotek.model.TKdataObject;
 import fr.aphp.tumorotek.model.coeur.annotation.TableAnnotation;
+import fr.aphp.tumorotek.model.coeur.prelevement.Prelevement;
 import fr.aphp.tumorotek.model.contexte.Banque;
 import fr.aphp.tumorotek.model.imprimante.AffectationImprimante;
 import fr.aphp.tumorotek.model.qualite.OperationType;
@@ -123,6 +124,8 @@ public abstract class AbstractListeController2 extends AbstractController
 
    protected Checkbox checkAll;
 
+   protected Menuitem sendMailItem;
+   
    protected Menuitem modificationItem;
 
    protected Menuitem exportItem;
@@ -579,6 +582,9 @@ public abstract class AbstractListeController2 extends AbstractController
     * venant de la liste en fonction des droits sur les opérations.
     */
    public void disableObjetsSelectionItems(final boolean disable){
+	  if(sendMailItem != null){
+		  sendMailItem.setDisabled(disable || !isCanModifMultiple() || getSelectedObjects().size() < 1);
+	  }
       if(modificationItem != null){
          modificationItem.setDisabled(disable || !isCanModifMultiple() || getSelectedObjects().size() < 2);
       }
@@ -862,6 +868,18 @@ public abstract class AbstractListeController2 extends AbstractController
     */
    public void onClick$exportItemAdv(){
       openRestrictTablesModale(this, null, getObjectTabController().getEntiteTab());
+   }
+   
+   /**
+    * Export affichant la modale permettant la restriction
+    * des tables d'annotations concernées par l'export.
+    * @since 2.0.10
+    */
+   public void onClick$sendMailItem(){
+	   getResultatsIds().clear();
+       extractIdsFromList((List<TKdataObject>) getSelectedObjects(), getResultatsIds());
+	   final List<Prelevement> prelevements = new ArrayList<>(ManagerLocator.getPrelevementManager().findByIdsInListManager(resultatsIds));
+	   getObjectTabController().getPrelevementController().generateAndOpenMail(prelevements);
    }
 
    /**
@@ -1356,7 +1374,7 @@ public abstract class AbstractListeController2 extends AbstractController
       Clients.showBusy(Labels.getLabel("general.display.wait"));
       Events.echoEvent("onLaterUpdateMulti", self, null);
    }
-
+   
    public void onLaterUpdateMulti(){
       passSelectedToList();
       setCurrentObject(null);
@@ -1373,7 +1391,7 @@ public abstract class AbstractListeController2 extends AbstractController
 
       Clients.clearBusy();
    }
-
+   
    /**
     * Renvoie le nom de l'entite associée à la liste.
     *

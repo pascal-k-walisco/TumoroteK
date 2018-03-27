@@ -1,1 +1,23 @@
 /target/
+<<<<<<< HEAD
+=======
+
+######################
+# Eclipse
+######################
+*.pydevproject
+.project
+.metadata
+tmp/
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+.factorypath
+/src/main/resources/rebel.xml
+>>>>>>> 3f1145b9e8b48ad1d261944cd66e3f139e65b1d3

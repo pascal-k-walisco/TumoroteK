@@ -38,6 +38,7 @@ package fr.aphp.tumorotek.action.prelevement;
 import static fr.aphp.tumorotek.model.contexte.EContexte.BTO;
 import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,8 +58,10 @@ import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.SuspendNotAllowedException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Messagebox.Button;
 import org.zkoss.zul.Tabbox;
 import org.zkoss.zul.Tabpanel;
 import org.zkoss.zul.Timer;
@@ -84,9 +87,11 @@ import fr.aphp.tumorotek.model.coeur.echantillon.Echantillon;
 import fr.aphp.tumorotek.model.coeur.patient.Maladie;
 import fr.aphp.tumorotek.model.coeur.prelevement.LaboInter;
 import fr.aphp.tumorotek.model.coeur.prelevement.Prelevement;
+import fr.aphp.tumorotek.model.contexte.Banque;
 import fr.aphp.tumorotek.model.interfacage.PatientSip;
 import fr.aphp.tumorotek.model.interfacage.Recepteur;
 import fr.aphp.tumorotek.model.systeme.Entite;
+import fr.aphp.tumorotek.model.utilisateur.Utilisateur;
 import fr.aphp.tumorotek.webapp.general.SessionUtils;
 
 /**
@@ -645,9 +650,24 @@ public class PrelevementController extends AbstractObjectTabController
    }
 
    public void createAnotherPrelevement(final Prelevement prlvt){
-      if(Messagebox.show(Labels.getLabel("fichePrelevement.create.another.prelevement"),
-         Labels.getLabel("message.new.prelevement.title"), Messagebox.YES | Messagebox.NO,
-         Messagebox.QUESTION) == Messagebox.YES){
+	  Map<String, String> params = new HashMap<String, String>();
+	  params.put("width", "800px");
+	  Button response = Messagebox.show(
+		  Labels.getLabel("fichePrelevement.create.another.prelevement"),
+		  Labels.getLabel("message.new.prelevement.title"), 
+		  new Button[]{Messagebox.Button.YES, Messagebox.Button.CANCEL,Messagebox.Button.NO,Messagebox.Button.RETRY}, 
+		  new String[]{
+			  Labels.getLabel("fichePrelevement.afterCreatePrelevement.messageBox.yes"),
+			  Labels.getLabel("fichePrelevement.afterCreatePrelevement.messageBox.no"),
+			  Labels.getLabel("fichePrelevement.afterCreatePrelevement.messageBox.noSendMailAll"),
+			  Labels.getLabel("fichePrelevement.afterCreatePrelevement.messageBox.noSendMailMine"),
+		  },
+		  Messagebox.QUESTION,
+		  null,
+		  null,
+		  params);
+	  
+      if(response == Messagebox.Button.YES){
          backToMe(getMainWindow(), page);
 
          // si il y eu edit avant et addNew depuis liste
@@ -674,10 +694,215 @@ public class PrelevementController extends AbstractObjectTabController
          getListeRegion().setOpen(false);
 
          showStatic(false);
-      } else {
-    	  // Emission de mails automatiques vers ARC du centre préleveur
-    	  
+      } else if(response == Messagebox.Button.NO){
+    	  // Emission de mails automatiques vers ARC du centre préleveur de tous les prélèvement saisis ces dernières 48h
+    	  Banque currentBanque = SessionUtils.getCurrentBanque(sessionScope);
+    	  final List<Prelevement> prelevements = new ArrayList<>(ManagerLocator.getPrelevementManager().findAllCreatedDuringLast48hByBank(currentBanque));
+    	  generateAndOpenMail(prelevements);
+      } else if(response == Messagebox.Button.RETRY){
+    	  // Emission de mails automatiques vers ARC du centre préleveur de tous les prélèvement saisis ces dernières 48h saisis par l'utilisateur courant
+    	  Banque currentBanque = SessionUtils.getCurrentBanque(sessionScope);
+    	  Utilisateur currentUtilisateur = SessionUtils.getLoggedUser(sessionScope);
+    	  final List<Prelevement> prelevements = new ArrayList<>(ManagerLocator.getPrelevementManager().findAllCreatedDuringLast48hByBankAndUser(currentBanque, currentUtilisateur));
+    	  generateAndOpenMail(prelevements);
       }
+   }
+   
+   /**
+    * Générer le mail via mailto
+    * @param prelevements
+    */
+   public void generateAndOpenMail(final List<Prelevement> prelevements) {
+	   String contact = getMailContact();
+	   String subject = getMailSubject();
+	   String body = getMailBody(prelevements);
+	   openMailto(contact, subject, body);
+   }
+   
+   /**
+	 * Générer le contenu du mail pour confirmer la recéption des prélèvements
+	 * @param prelevements, la listes de prélèvements à confirmer
+	 * @return
+	 */
+   private String getMailContact() {
+	   Banque currentBanque = SessionUtils.getCurrentBanque(sessionScope);
+	   return currentBanque.getContactArc();
+   }
+  
+   /**
+	 * Générer le contenu du mail pour confirmer la recéption des prélèvements
+	 * @param prelevements, la listes de prélèvements à confirmer
+	 * @return
+	 */
+   private String getMailSubject() {
+	   return Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.object");
+   }
+		  
+	/**
+	 * Générer le contenu du mail pour confirmer la recéption des prélèvements
+	 * @param prelevements, la listes de prélèvements à confirmer
+	 * @return
+	 */
+   private String getMailBody(final List<Prelevement> prelevements) {
+	  String dateFomat = Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.dateFormat");
+	  SimpleDateFormat formatter = new SimpleDateFormat(dateFomat);
+	  
+	  final String SYNTAX_WHITE = " ";
+	  final String SYNTAX_END_LINE = "\\n";
+	  final String SYNTAX_END_TAB = "-    ";
+	  
+	  String body = Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgHello")+SYNTAX_WHITE + SYNTAX_END_LINE;
+	  body += SYNTAX_END_LINE;
+	  
+	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgConfirm")+SYNTAX_WHITE + SYNTAX_END_LINE;
+	  body += SYNTAX_END_LINE;
+	  
+	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgList")+SYNTAX_WHITE + SYNTAX_END_LINE;
+	  if(prelevements!=null) {
+		  for(Prelevement prelevement : prelevements) {
+			  // ID EDMUS
+			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgIdEdmus")+SYNTAX_WHITE + prelevement.getMaladie().getPatient().getNom()+ SYNTAX_END_LINE;
+			  
+			  // Cohorte
+			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgIdCohorte")+SYNTAX_WHITE + prelevement.getMaladie().getLibelle() + SYNTAX_END_LINE;
+			  
+			  // Prélèvement ID
+			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmt")+SYNTAX_WHITE + prelevement.getCode() + SYNTAX_END_LINE;
+			
+			  // Date de prélèvement  
+			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtDateTimeAct")+SYNTAX_WHITE;
+			  if(prelevement.getDatePrelevement()!=null && prelevement.getDatePrelevement().getTime()!=null) {
+				  body += formatter.format(prelevement.getDatePrelevement().getTime());
+			  }
+			  body += SYNTAX_END_LINE;
+			  
+			  // Date de reception
+			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtDateTimeRcpt")+SYNTAX_WHITE;
+			  if(prelevement.getDateArrivee()!=null && prelevement.getDateArrivee().getTime()!=null) {
+				  body += formatter.format(prelevement.getDateArrivee().getTime());
+			  }
+			  body += SYNTAX_END_LINE;
+			  
+			  // Conformité
+			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtCorform")+SYNTAX_WHITE;
+			  if(prelevement.getConformeArrivee()!=null && prelevement.getConformeArrivee()) {
+				  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtCorform.yes");
+			  } else {
+				  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtCorform.no");
+				  // TODO Rajouter la précision
+			  }
+			  body += SYNTAX_END_LINE;
+			  
+			  // Fin
+			  body += SYNTAX_END_LINE;
+		  }
+	  }
+	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgEnd") + SYNTAX_END_LINE;
+	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgBye");	
+	  
+	  return body;
+   }
+   
+   /**
+   * Ouvrir le client client mail de l'utilisateur avec un mail pré-construit
+   * @param mailto
+   */
+   private void openMailto(final String contact, final String subject, final String body) {
+	   /*
+	   String mailtoAction = "mailto:"+contact+"?subject="+subject;
+	   
+	   String javascript = 
+			// <form>
+			"var nodeForm = document.createElement('form');"+
+	   
+ 			"var attrId = document.createAttribute('id');"+
+			"attrId.value = 'mailtoForm';"+
+			"nodeForm.setAttributeNode(attrId);"+
+	
+	  	  	"var attStyle = document.createAttribute('style');"+
+	  	  	"attStyle.value = 'visibility:hidden';"+
+	  	  	"nodeForm.setAttributeNode(attStyle);"+
+  	  
+ 			"var attrAction = document.createAttribute('action');"+
+ 			"attrAction.value = '"+mailtoAction+"';"+
+ 			"nodeForm.setAttributeNode(attrAction);"+
+  
+ 			"var attrMethod = document.createAttribute('method');"+
+ 			"attrMethod.value = 'post';"+
+ 			"nodeForm.setAttributeNode(attrMethod);"+
+ 			
+ 			"var attrEnctype = document.createAttribute('enctype');"+
+ 			"attrEnctype.value = 'text/plain';"+
+ 			"nodeForm.setAttributeNode(attrEnctype);"+
+  
+			//<input>
+			"var nodeInput = document.createElement('input');"+
+
+			"var attrSubmitId = document.createAttribute('id');"+
+			"attrSubmitId.value = 'mailtoSubmit';"+
+			"nodeInput.setAttributeNode(attrSubmitId);"+
+	
+			"var attrType = document.createAttribute('type');"+
+			"attrType.value = 'submit';"+
+			"nodeInput.setAttributeNode(attrType);"+
+	
+			"var attrValue = document.createAttribute('value');"+
+			"attrValue.value = 'send';"+
+			"nodeInput.setAttributeNode(attrValue);"+
+	
+			// Include Input to Form
+			"nodeForm.appendChild(nodeInput);"+
+	
+			// Include Div - Body
+//			"var nodeBody = document.createAttribute('span');"+
+//			"nodeBody.innerHTML = '"+body+"';"+
+//			"nodeForm.appendChild(nodeBody);"+
+
+			// Include Form to DOM
+			"document.body.appendChild(nodeForm);"+
+
+ 	  		// Executer le form
+ 	  		"document.getElementById('mailtoSubmit').click();"+
+ 	  
+ 	  		// Supprimer le form
+			"document.getElementById('mailtoForm').remove();";
+	  */
+	   
+//	   /*
+	   String mailto = "mailto:"+contact+"?subject="+subject+"&body="+body;
+	   
+	   String javascript = 
+    	  "var nodeA = document.createElement('a');"+
+    	  
+    	  "var attrId = document.createAttribute('id');"+
+    	  "attrId.value = 'mailtoBtn';"+
+    	  "nodeA.setAttributeNode(attrId);"+
+    	  
+    	  "var attrHref = document.createAttribute('href');"+
+    	  "attrHref.value = encodeURI('"+mailto+"');"+
+    	  "nodeA.setAttributeNode(attrHref);"+
+    	  
+    	  "var attTarget = document.createAttribute('target');"+ 
+    	  "attTarget.value = '_blank';"+
+    	  "nodeA.setAttributeNode(attTarget);"+
+
+     	  "var attStyle = document.createAttribute('style');"+
+     	  "attStyle.value = 'display:none;';"+
+    	  "nodeA.setAttributeNode(attStyle);"+
+    	  
+    	  "document.body.appendChild(nodeA);"+
+    	  
+    	  "document.getElementById('mailtoBtn').click();"+
+    	  
+    	  "document.getElementById('mailtoBtn').remove();";
+//	   */
+//	   String mailtoAction = "mailto:"+contact+"?subject="+subject;
+//	   String javascript =
+//		   "var xhr = new XMLHttpRequest();"+
+//		   "xhr.open('POST', '"+mailtoAction+"', true);"+
+//		   "xhr.setRequestHeader('Content-Type', 'text/enriched');"+
+//		   "xhr.send('"+body+"');";
+ 	  Clients.evalJavaScript(javascript);
    }
 
    /**

@@ -154,6 +154,7 @@ public class Banque implements TKFantomableObject, TKdataObject, java.io.Seriali
 
    private Collaborateur collaborateur;
    private Collaborateur contact;
+   private String contactArc;
    private Service proprietaire;
    private Plateforme plateforme;
    private Contexte contexte;
@@ -291,6 +292,15 @@ public class Banque implements TKFantomableObject, TKdataObject, java.io.Seriali
 
    public void setContact(final Collaborateur c){
       this.contact = c;
+   }
+   
+   @Column(name = "CONTACT_ARC", nullable = true, length = 100)
+   public String getContactArc(){
+      return contactArc;
+   }
+
+   public void setContactArc(final String c){
+      this.contactArc = c;
    }
 
    @ManyToOne
@@ -641,6 +651,7 @@ public class Banque implements TKFantomableObject, TKdataObject, java.io.Seriali
       clone.setDescription(this.description);
       clone.setProprietaire(this.proprietaire);
       clone.setContact(this.contact);
+      clone.setContactArc(this.contactArc);
       clone.setAutoriseCrossPatient(this.autoriseCrossPatient);
       clone.setArchive(this.archive);
       clone.setDefMaladies(this.defMaladies);

@@ -179,8 +179,23 @@ import fr.aphp.tumorotek.model.utils.Utils;
       query = "SELECT count(p) FROM Prelevement p" + " WHERE p.preleveur = ?1"),
    @NamedQuery(name = "Prelevement.findByOperateur", query = "SELECT e FROM Prelevement e " + "WHERE e.operateur = (?1)"),
    @NamedQuery(name = "Prelevement.findByService", query = "SELECT e FROM Prelevement e " + "WHERE e.servicePreleveur = (?1)"),
-   @NamedQuery(name = "Prelevement.findByPatientAndBanques",
-      query = "SELECT e FROM Prelevement e " + "WHERE e.maladie.patient = ?1 AND e.banque in (?2)")})
+   @NamedQuery(name = "Prelevement.findAllCreatedSinceDateByBankAndUser",
+		query = "SELECT p "
+      		+ "FROM Prelevement p, Operation o "
+		    + "WHERE o.entite.entiteId = 2 "
+		    + "AND o.operationType.operationTypeId = 3 "
+		    + "AND o.objetId = p.prelevementId "
+    	    + "AND o.date >= ?1 "
+    	    + "AND p.banque = ?2 "
+   			+ "AND o.utilisateur = ?3 "),
+   @NamedQuery(name = "Prelevement.findAllCreatedSinceDateByBank",
+   		query = "SELECT p "
+      		+ "FROM Prelevement p, Operation o "
+		    + "WHERE o.entite.entiteId = 2 "
+		    + "AND o.operationType.operationTypeId = 3 "
+		    + "AND o.objetId = p.prelevementId "
+    	    + "AND o.date >= ?1 "
+    	    + "AND p.banque = ?2 ")})
 public class Prelevement implements TKAnnotableObject, Serializable
 {
 

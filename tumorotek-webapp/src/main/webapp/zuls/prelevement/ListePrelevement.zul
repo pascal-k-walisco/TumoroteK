@@ -188,6 +188,10 @@
 						image="/images/icones/small_action.png" width="36px"
 						height="24px">
 						<menupopup>
+						    <menuitem id="sendMailItem"
+								image="/images/icones/dossier_inbox.png"
+								label="${c:l('general.actions.mail')}"
+								disabled="true" />
 							<menuitem id="modificationItem"
 								image="/images/icones/edit.png"
 								label="${c:l('general.actions.modification.multiple')}"
