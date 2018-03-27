@@ -1,6 +1,4 @@
 /target/
-<<<<<<< HEAD
-=======
 
 ######################
 # Eclipse
@@ -17,7 +15,7 @@ tmp/**/*
 local.properties
 .classpath
 .settings/
+.settings/*
 .loadpath
 .factorypath
 /src/main/resources/rebel.xml
->>>>>>> 3f1145b9e8b48ad1d261944cd66e3f139e65b1d3
