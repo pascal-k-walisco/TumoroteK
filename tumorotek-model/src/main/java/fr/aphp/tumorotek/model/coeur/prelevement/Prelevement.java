@@ -242,6 +242,9 @@ public class Prelevement implements TKAnnotableObject, Serializable
 
    private PrelevementDelegate delegate;
 
+   private Boolean wrongDatePeremption;
+   private Boolean wrongDateArrive;
+   
    public Prelevement(){}
 
    @Override
@@ -644,8 +647,25 @@ public class Prelevement implements TKAnnotableObject, Serializable
    public void setRisques(final Set<Risque> risks){
       this.risques = risks;
    }
+   
+   	@Transient
+	public Boolean getWrongDatePeremption() {
+		return wrongDatePeremption;
+	}
+	
+	public void setWrongDatePeremption(Boolean wrongDatePeremption) {
+		this.wrongDatePeremption = wrongDatePeremption;
+	}
+	@Transient
+	public Boolean getWrongDateArrive() {
+		return wrongDateArrive;
+	}
+	
+	public void setWrongDateArrive(Boolean wrongDateArrive) {
+		this.wrongDateArrive = wrongDateArrive;
+	}
 
-   /**
+/**
     * 2 prélèvements sont considérés comme égaux s'ils ont le même
     * code et la même banque.
     * @param obj est le prélèvement à tester.

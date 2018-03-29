@@ -40,6 +40,7 @@ import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,7 @@ import fr.aphp.tumorotek.action.prelevement.bto.FichePrelevementStaticBTO;
 import fr.aphp.tumorotek.action.prelevement.bto.ListePrelevementBTO;
 import fr.aphp.tumorotek.action.prelevement.serotk.PrelevementSeroRowRenderer;
 import fr.aphp.tumorotek.action.prodderive.ProdDeriveController;
+import fr.aphp.tumorotek.decorator.ObjectTypesFormatters;
 import fr.aphp.tumorotek.model.TKAnnotableObject;
 import fr.aphp.tumorotek.model.TKdataObject;
 import fr.aphp.tumorotek.model.coeur.echantillon.Echantillon;
@@ -90,6 +92,7 @@ import fr.aphp.tumorotek.model.coeur.prelevement.Prelevement;
 import fr.aphp.tumorotek.model.contexte.Banque;
 import fr.aphp.tumorotek.model.interfacage.PatientSip;
 import fr.aphp.tumorotek.model.interfacage.Recepteur;
+import fr.aphp.tumorotek.model.qualite.ObjetNonConforme;
 import fr.aphp.tumorotek.model.systeme.Entite;
 import fr.aphp.tumorotek.model.utilisateur.Utilisateur;
 import fr.aphp.tumorotek.webapp.general.SessionUtils;
@@ -615,7 +618,7 @@ public class PrelevementController extends AbstractObjectTabController
    /**
     * Méthode permettant de passer en mode "création", collapse la liste
     * et dessine la fiche édition/creation avec un objet vide.
-    */
+    */;
    @Override
    public void switchToCreateMode(final TKdataObject parent){
       super.switchToCreateMode(parent);
@@ -651,7 +654,7 @@ public class PrelevementController extends AbstractObjectTabController
 
    public void createAnotherPrelevement(final Prelevement prlvt){
 	  Map<String, String> params = new HashMap<String, String>();
-	  params.put("width", "800px");
+	  params.put("width", "600px");
 	  Button response = Messagebox.show(
 		  Labels.getLabel("fichePrelevement.create.another.prelevement"),
 		  Labels.getLabel("message.new.prelevement.title"), 
@@ -660,7 +663,7 @@ public class PrelevementController extends AbstractObjectTabController
 			  Labels.getLabel("fichePrelevement.afterCreatePrelevement.messageBox.yes"),
 			  Labels.getLabel("fichePrelevement.afterCreatePrelevement.messageBox.no"),
 			  Labels.getLabel("fichePrelevement.afterCreatePrelevement.messageBox.noSendMailAll"),
-			  Labels.getLabel("fichePrelevement.afterCreatePrelevement.messageBox.noSendMailMine"),
+//			  Labels.getLabel("fichePrelevement.afterCreatePrelevement.messageBox.noSendMailMine"),
 		  },
 		  Messagebox.QUESTION,
 		  null,
@@ -698,21 +701,32 @@ public class PrelevementController extends AbstractObjectTabController
     	  // Emission de mails automatiques vers ARC du centre préleveur de tous les prélèvement saisis ces dernières 48h
     	  Banque currentBanque = SessionUtils.getCurrentBanque(sessionScope);
     	  final List<Prelevement> prelevements = new ArrayList<>(ManagerLocator.getPrelevementManager().findAllCreatedDuringLast48hByBank(currentBanque));
-    	  generateAndOpenMail(prelevements);
-      } else if(response == Messagebox.Button.RETRY){
-    	  // Emission de mails automatiques vers ARC du centre préleveur de tous les prélèvement saisis ces dernières 48h saisis par l'utilisateur courant
-    	  Banque currentBanque = SessionUtils.getCurrentBanque(sessionScope);
-    	  Utilisateur currentUtilisateur = SessionUtils.getLoggedUser(sessionScope);
-    	  final List<Prelevement> prelevements = new ArrayList<>(ManagerLocator.getPrelevementManager().findAllCreatedDuringLast48hByBankAndUser(currentBanque, currentUtilisateur));
-    	  generateAndOpenMail(prelevements);
+    	  generateAndOpenMails(prelevements);
+//      } else if(response == Messagebox.Button.RETRY){
+//    	  // Emission de mails automatiques vers ARC du centre préleveur de tous les prélèvement saisis ces dernières 48h saisis par l'utilisateur courant
+//    	  Banque currentBanque = SessionUtils.getCurrentBanque(sessionScope);
+//    	  Utilisateur currentUtilisateur = SessionUtils.getLoggedUser(sessionScope);
+//    	  final List<Prelevement> prelevements = new ArrayList<>(ManagerLocator.getPrelevementManager().findAllCreatedDuringLast48hByBankAndUser(currentBanque, currentUtilisateur));
+//    	  generateAndOpenMails(prelevements);
       }
+   }
+   
+   /**
+    * Générer les mails via mailto
+    * @param prelevements
+    */
+   public void generateAndOpenMails(final List<Prelevement> prelevements) {
+	  Map<Integer,Map<Integer,Prelevement>> groups = getPrelevementsGroupByPatientAndNature(prelevements);
+ 	  for (Integer keyPatient : groups.keySet()) {
+		  generateAndOpenMail(groups.get(keyPatient));
+ 	  }
    }
    
    /**
     * Générer le mail via mailto
     * @param prelevements
     */
-   public void generateAndOpenMail(final List<Prelevement> prelevements) {
+   public void generateAndOpenMail(final Map<Integer, Prelevement> prelevements) {
 	   String contact = getMailContact();
 	   String subject = getMailSubject();
 	   String body = getMailBody(prelevements);
@@ -739,15 +753,17 @@ public class PrelevementController extends AbstractObjectTabController
    }
 		  
 	/**
-	 * Générer le contenu du mail pour confirmer la recéption des prélèvements
+	 * Générer le contenu du mail pour confirmer la recéption des prélèvements pour chaque patient
 	 * @param prelevements, la listes de prélèvements à confirmer
 	 * @return
 	 */
-   private String getMailBody(final List<Prelevement> prelevements) {
+   private String getMailBody(final Map<Integer,Prelevement> prelevements) {
 	  String dateFomat = Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.dateFormat");
 	  SimpleDateFormat formatter = new SimpleDateFormat(dateFomat);
 	  
 	  final String SYNTAX_WHITE = " ";
+	  final String SIMPLE_QUOTE = "'";
+	  final String SYNTAX_SIMPLE_QUOTE = " ";
 	  final String SYNTAX_END_LINE = "\\n";
 	  final String SYNTAX_END_TAB = "-    ";
 	  
@@ -757,50 +773,147 @@ public class PrelevementController extends AbstractObjectTabController
 	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgConfirm")+SYNTAX_WHITE + SYNTAX_END_LINE;
 	  body += SYNTAX_END_LINE;
 	  
+	  Integer keyFirst = prelevements.keySet().iterator().next();
+	  Prelevement first = prelevements.get(keyFirst);
+	  
+	  // ID EDMUS
+	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgIdEdmus")+SYNTAX_WHITE + first.getMaladie().getPatient().getNom()+ SYNTAX_END_LINE;
+	  
+	  // Cohorte
+	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgIdCohorte")+SYNTAX_WHITE + "TODO" + SYNTAX_END_LINE;
+	  body += SYNTAX_END_LINE;
+	  
+	  // Liste des prelevements
 	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgList")+SYNTAX_WHITE + SYNTAX_END_LINE;
-	  if(prelevements!=null) {
-		  for(Prelevement prelevement : prelevements) {
-			  // ID EDMUS
-			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgIdEdmus")+SYNTAX_WHITE + prelevement.getMaladie().getPatient().getNom()+ SYNTAX_END_LINE;
-			  
-			  // Cohorte
-			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgIdCohorte")+SYNTAX_WHITE + prelevement.getMaladie().getLibelle() + SYNTAX_END_LINE;
-			  
-			  // Prélèvement ID
-			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmt")+SYNTAX_WHITE + prelevement.getCode() + SYNTAX_END_LINE;
-			
-			  // Date de prélèvement  
-			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtDateTimeAct")+SYNTAX_WHITE;
-			  if(prelevement.getDatePrelevement()!=null && prelevement.getDatePrelevement().getTime()!=null) {
-				  body += formatter.format(prelevement.getDatePrelevement().getTime());
-			  }
-			  body += SYNTAX_END_LINE;
-			  
-			  // Date de reception
-			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtDateTimeRcpt")+SYNTAX_WHITE;
-			  if(prelevement.getDateArrivee()!=null && prelevement.getDateArrivee().getTime()!=null) {
-				  body += formatter.format(prelevement.getDateArrivee().getTime());
-			  }
-			  body += SYNTAX_END_LINE;
-			  
-			  // Conformité
-			  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtCorform")+SYNTAX_WHITE;
-			  if(prelevement.getConformeArrivee()!=null && prelevement.getConformeArrivee()) {
-				  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtCorform.yes");
-			  } else {
-				  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtCorform.no");
-				  // TODO Rajouter la précision
-			  }
-			  body += SYNTAX_END_LINE;
-			  
-			  // Fin
-			  body += SYNTAX_END_LINE;
+	  body += SYNTAX_END_LINE;
+	  
+	  for (Integer keyNature : prelevements.keySet()) {
+		  Prelevement prelevement = prelevements.get(keyNature);
+		 
+		  // Prélèvement TYPE
+		  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmt")+SYNTAX_WHITE + prelevement.getNature().getNom() + SYNTAX_END_LINE;
+		
+		  // Date de prélèvement  
+		  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtDateTimeAct")+SYNTAX_WHITE;
+		  if(prelevement.getWrongDatePeremption()) {
+			  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.dateMissmatch");
+		  } else if(prelevement.getDatePrelevement()!=null && prelevement.getDatePrelevement().getTime()!=null) {
+			  body += formatter.format(prelevement.getDatePrelevement().getTime());
+		  } 
+		  body += SYNTAX_END_LINE;
+		  
+		  // Date de reception
+		  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtDateTimeRcpt")+SYNTAX_WHITE;
+		  if(prelevement.getWrongDateArrive()) {
+			  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.dateMissmatch");
+		  } else if(prelevement.getDateArrivee()!=null && prelevement.getDateArrivee().getTime()!=null) {
+			  body += formatter.format(prelevement.getDateArrivee().getTime());
 		  }
+		  body += SYNTAX_END_LINE;
+		  
+		  // Conformité
+		  body += SYNTAX_END_TAB + Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgPrlvmtCorform")+SYNTAX_WHITE;
+		  body += getConformeArriveeFormated(prelevement);
+		  body += SYNTAX_END_LINE;
+		  
+		  // Fin
+		  body += SYNTAX_END_LINE;
 	  }
+	
 	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgEnd") + SYNTAX_END_LINE;
 	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgBye");	
 	  
-	  return body;
+	  return body.replaceAll(SIMPLE_QUOTE, SYNTAX_SIMPLE_QUOTE);
+   }
+   
+   /**
+    * Formate la valeur du champ conformeArrivee.
+    * @return Oui ou non.
+    */
+   public String getConformeArriveeFormated(Prelevement prelevement){
+      final StringBuffer sb = new StringBuffer();
+      if(prelevement != null){
+         if(prelevement.getConformeArrivee() != null){
+            sb.append(ObjectTypesFormatters.booleanLitteralFormatter(prelevement.getConformeArrivee()));
+
+            if(prelevement.getConformeArrivee() != null && !prelevement.getConformeArrivee()){
+               sb.append(" - ");
+               final List<ObjetNonConforme> list =
+                  ManagerLocator.getObjetNonConformeManager().findByObjetAndTypeManager(prelevement, "Arrivee");
+
+               if(list.size() > 0){
+                  for(int i = 0; i < list.size(); i++){
+                     sb.append(list.get(i).getNonConformite().getNom());
+                     if(i < list.size() - 1){
+                        sb.append(", ");
+                     }else{
+                        sb.append(".");
+                     }
+                  }
+               }else{
+                  sb.append(Labels.getLabel("nonConformite.raison.inconnue"));
+               }
+            }
+         }else{
+            sb.append("-");
+         }
+      }
+      return sb.toString();
+   }
+   /**
+    * Groupe les prelevements par patient
+    * @param prelevements
+    * @return
+    */
+   private Map<Integer,Map<Integer,Prelevement>> getPrelevementsGroupByPatientAndNature(List<Prelevement> prelevements){
+	   Map<Integer,Map<Integer, Prelevement>> groups = new HashMap<>();
+	   
+	   if(prelevements!=null) {
+		   for(Prelevement prelevement: prelevements) {
+			   if(prelevement.getMaladie()!=null && prelevement.getMaladie().getPatient()!=null && prelevement.getNature()!=null) {
+				   // GroupByPatient
+				   Integer patientId = prelevement.getMaladie().getPatient().getPatientId();
+				   if(!groups.containsKey(patientId)) {
+					   groups.put(patientId, new HashMap<Integer, Prelevement>());
+				   }
+				   
+				   // GroupByNature
+				   Integer natureId = prelevement.getNature().getNatureId();
+				   if(!groups.get(patientId).containsKey(natureId)) {
+					   prelevement.setWrongDatePeremption(false);
+					   prelevement.setWrongDateArrive(false);
+					   groups.get(patientId).put(natureId, prelevement);
+				   }
+				   Prelevement storedPrelevement = groups.get(patientId).get(natureId);
+				   if(storedPrelevement!=null) {
+					   if(!equalsCalendarDate(storedPrelevement.getDatePrelevement(), prelevement.getDatePrelevement())) {
+						   storedPrelevement.setWrongDatePeremption(true);
+					   }
+					   if(!equalsCalendarDate(storedPrelevement.getDateArrivee(), prelevement.getDateArrivee())) {
+						   storedPrelevement.setWrongDateArrive(true);
+					   }
+				   }
+			   }
+		   }
+	   }
+	   
+	   return groups;
+   }
+   
+   /**
+    * Retourne vrai si les dates sont equales
+    * @param cal1
+    * @param cal2
+    * @return
+    */
+   private boolean equalsCalendarDate(Calendar cal1, Calendar cal2) {
+	   boolean res = false;
+	   if((cal1 == null && cal2 == null)
+		   || (cal1.getTime() == null && cal2.getTime() == null)
+		   || (cal1.getTime().equals(cal2.getTime()))) {
+		   res = true;
+	   }
+	   return res;
    }
    
    /**
@@ -808,78 +921,37 @@ public class PrelevementController extends AbstractObjectTabController
    * @param mailto
    */
    private void openMailto(final String contact, final String subject, final String body) {
-	   /*
-	   String mailtoAction = "mailto:"+contact+"?subject="+subject;
+//	   String mailto = "mailto:"+contact+"?subject=encodeURI('"+subject+"')&body=encodeURI('"+body+"')";
 	   
 	   String javascript = 
-			// <form>
-			"var nodeForm = document.createElement('form');"+
-	   
- 			"var attrId = document.createAttribute('id');"+
-			"attrId.value = 'mailtoForm';"+
-			"nodeForm.setAttributeNode(attrId);"+
-	
-	  	  	"var attStyle = document.createAttribute('style');"+
-	  	  	"attStyle.value = 'visibility:hidden';"+
-	  	  	"nodeForm.setAttributeNode(attStyle);"+
-  	  
- 			"var attrAction = document.createAttribute('action');"+
- 			"attrAction.value = '"+mailtoAction+"';"+
- 			"nodeForm.setAttributeNode(attrAction);"+
-  
- 			"var attrMethod = document.createAttribute('method');"+
- 			"attrMethod.value = 'post';"+
- 			"nodeForm.setAttributeNode(attrMethod);"+
- 			
- 			"var attrEnctype = document.createAttribute('enctype');"+
- 			"attrEnctype.value = 'text/plain';"+
- 			"nodeForm.setAttributeNode(attrEnctype);"+
-  
-			//<input>
-			"var nodeInput = document.createElement('input');"+
-
-			"var attrSubmitId = document.createAttribute('id');"+
-			"attrSubmitId.value = 'mailtoSubmit';"+
-			"nodeInput.setAttributeNode(attrSubmitId);"+
-	
-			"var attrType = document.createAttribute('type');"+
-			"attrType.value = 'submit';"+
-			"nodeInput.setAttributeNode(attrType);"+
-	
-			"var attrValue = document.createAttribute('value');"+
-			"attrValue.value = 'send';"+
-			"nodeInput.setAttributeNode(attrValue);"+
-	
-			// Include Input to Form
-			"nodeForm.appendChild(nodeInput);"+
-	
-			// Include Div - Body
-//			"var nodeBody = document.createAttribute('span');"+
-//			"nodeBody.innerHTML = '"+body+"';"+
-//			"nodeForm.appendChild(nodeBody);"+
-
-			// Include Form to DOM
-			"document.body.appendChild(nodeForm);"+
-
- 	  		// Executer le form
- 	  		"document.getElementById('mailtoSubmit').click();"+
- 	  
- 	  		// Supprimer le form
-			"document.getElementById('mailtoForm').remove();";
-	  */
-	   
-//	   /*
-	   String mailto = "mailto:"+contact+"?subject="+subject+"&body="+body;
-	   
-	   String javascript = 
+//	      "function replaceAll(str, find, replace) {"+
+//		  "  return str.replace(new RegExp(find, 'g'), replace);"+
+//		  "}"+
+//		  "String.prototype.replaceAll = function (find, replace) {"+
+//		  "    var str = this;"+
+//		  "    return str.replace(new RegExp(find, 'g'), replace);"+
+//	    "";"+
+			
     	  "var nodeA = document.createElement('a');"+
     	  
     	  "var attrId = document.createAttribute('id');"+
     	  "attrId.value = 'mailtoBtn';"+
     	  "nodeA.setAttributeNode(attrId);"+
     	  
+		  "var contact = '"+contact+"';"+
+		  "console.log('-------------------------');"+
+		  "console.log(contact);"+
+		  "var subject = encodeURIComponent('"+subject+"');"+
+		  "console.log('-------------------------');"+
+		  "console.log(subject);"+
+		  "var body = encodeURIComponent('"+body+"');"+
+		  "console.log('-------------------------');"+
+		  "console.log(body);"+
+    	  "var mailto = 'mailto:'+contact+'?subject='+subject+'&body='+body;"+
+    	  "console.log('-------------------------');"+
+		  "console.log(mailto);"+
     	  "var attrHref = document.createAttribute('href');"+
-    	  "attrHref.value = encodeURI('"+mailto+"');"+
+    	  "attrHref.value = mailto;"+
     	  "nodeA.setAttributeNode(attrHref);"+
     	  
     	  "var attTarget = document.createAttribute('target');"+ 
@@ -895,13 +967,6 @@ public class PrelevementController extends AbstractObjectTabController
     	  "document.getElementById('mailtoBtn').click();"+
     	  
     	  "document.getElementById('mailtoBtn').remove();";
-//	   */
-//	   String mailtoAction = "mailto:"+contact+"?subject="+subject;
-//	   String javascript =
-//		   "var xhr = new XMLHttpRequest();"+
-//		   "xhr.open('POST', '"+mailtoAction+"', true);"+
-//		   "xhr.setRequestHeader('Content-Type', 'text/enriched');"+
-//		   "xhr.send('"+body+"');";
  	  Clients.evalJavaScript(javascript);
    }
 

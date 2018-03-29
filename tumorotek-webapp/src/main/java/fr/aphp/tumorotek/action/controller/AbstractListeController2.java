@@ -919,7 +919,7 @@ public abstract class AbstractListeController2 extends AbstractController
 	   getResultatsIds().clear();
        extractIdsFromList((List<TKdataObject>) getSelectedObjects(), getResultatsIds());
 	   final List<Prelevement> prelevements = new ArrayList<>(ManagerLocator.getPrelevementManager().findByIdsInListManager(resultatsIds));
-	   getObjectTabController().getPrelevementController().generateAndOpenMail(prelevements);
+	   getObjectTabController().getPrelevementController().generateAndOpenMails(prelevements);
    }
 
    /**
