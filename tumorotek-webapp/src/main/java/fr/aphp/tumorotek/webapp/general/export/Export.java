@@ -474,7 +474,7 @@ public class Export extends Thread
    protected String initBIOCAPExportSQL(){
       return "{call select_biocap_data()}";
    }
-
+   
    protected String initBiobanquesExportSQL(){
       return "{call select_biobanques_data(?,?)}";
    }
@@ -492,17 +492,28 @@ public class Export extends Thread
       if(entite == ConfigManager.ENTITE_ID_PATIENT){
          sheetName = ConfigManager.aSheetName[0];
          labelType = "export.patients.filename";
-         export_patients(null);
+         export_patients(null, false);
          export_maladie();
       }else if(entite == ConfigManager.ENTITE_ID_PRELEVEMENT){
-         sheetName = ConfigManager.aSheetName[1];
-         labelType = "export.prelevements.filename";
-         export_prelevements(null);
-         countAnnotation = 0;
-         createAndFillTmpAnnotationTable(ConfigManager.ENTITE_ID_PATIENT);
-         export_patients(patientIds);
-         // connection.commit();
-         // updateProgressBar(60);
+    	  sheetName = ConfigManager.aSheetName[1];
+          if(exportType == ConfigManager.OFSEP_EXPORT){
+        	  labelType = "export.ofsep.filename";
+        	  export_prelevements(null, true);
+        	  countAnnotation = 0;
+              createAndFillTmpAnnotationTable(ConfigManager.ENTITE_ID_PATIENT);
+              export_patients(patientIds, true);
+              // connection.commit();
+              // updateProgressBar(60);
+          } else {
+        	  labelType = "export.prelevements.filename";
+        	  export_prelevements(null, false);
+        	  countAnnotation = 0;
+              createAndFillTmpAnnotationTable(ConfigManager.ENTITE_ID_PATIENT);
+              export_patients(patientIds, false);
+              // connection.commit();
+              // updateProgressBar(60);
+          }
+          
       }else if(entite == ConfigManager.ENTITE_ID_ECHANTILLON){
          sheetName = ConfigManager.aSheetName[2];
          labelType = "export.echantillons.filename";
@@ -521,10 +532,10 @@ public class Export extends Thread
          }
          countAnnotation = 0;
          createAndFillTmpAnnotationTable(ConfigManager.ENTITE_ID_PRELEVEMENT);
-         export_prelevements(prelevementIds);
+         export_prelevements(prelevementIds, false);
          countAnnotation = 0;
          createAndFillTmpAnnotationTable(ConfigManager.ENTITE_ID_PATIENT);
-         export_patients(patientIds);
+         export_patients(patientIds, false);
          // connection.commit();
          // updateProgressBar(70);
       }else if(entite == ConfigManager.ENTITE_ID_DERIVE){
@@ -542,10 +553,10 @@ public class Export extends Thread
          // updateProgressBar(40);
          countAnnotation = 0;
          createAndFillTmpAnnotationTable(ConfigManager.ENTITE_ID_PRELEVEMENT);
-         export_prelevements(prelevementIds);
+         export_prelevements(prelevementIds, false);
          countAnnotation = 0;
          createAndFillTmpAnnotationTable(ConfigManager.ENTITE_ID_PATIENT);
-         export_patients(patientIds);
+         export_patients(patientIds, false);
          // connection.commit();
          // updateProgressBar(60);
       }else if(entite == ConfigManager.ENTITE_ID_CESSION){
@@ -557,32 +568,32 @@ public class Export extends Thread
       }
    }
 
-   protected void export_patients(final List<Integer> o) throws SQLException, DesktopUnavailableException, InterruptedException{
+   protected void export_patients(final List<Integer> o, boolean modeOfsep) throws SQLException, DesktopUnavailableException, InterruptedException{
 
       log.debug("export patient");
 
       setExportDetails(progress += 10, null, o == null ? total : o.size(), DATA_PROGRESS, "progressbar.entite.Patients", null);
-      launchSQLproc(1, o);
+      launchSQLproc(1, o, modeOfsep);
 
       fillAnnotation(ConfigManager.ENTITE_ID_PATIENT);
    }
-
+   
    protected void export_maladie() throws SQLException, DesktopUnavailableException, InterruptedException{
 
       log.debug("export maladie");
 
       // setExportDetails(progress += 10, null, null, "récupération des maladie", null);
-      launchSQLproc(7, null);
+      launchSQLproc(7, null, false);
    }
 
-   protected void export_prelevements(final List<Integer> o)
+   protected void export_prelevements(final List<Integer> o, boolean modeOfsep)
       throws SQLException, DesktopUnavailableException, InterruptedException{
 
       log.debug("export prelevement");
 
       setExportDetails(progress += 10, null, o == null ? total : o.size(), DATA_PROGRESS, "progressbar.entite.Prelevements",
          null);
-      launchSQLproc(2, o);
+      launchSQLproc(2, o, modeOfsep);
 
       fillAnnotation(ConfigManager.ENTITE_ID_PRELEVEMENT);
 
@@ -590,7 +601,7 @@ public class Export extends Thread
 
       populateImtermIds(patientIds, "SELECT distinct patient_id FROM TMP_PRELEVEMENT_EXPORT");
    }
-
+   
    private void populateImtermIds(final List<Integer> intermIds, final String query) throws SQLException, InterruptedException{
       if(Thread.interrupted()){
          throw new InterruptedException();
@@ -716,7 +727,7 @@ public class Export extends Thread
 
       setExportDetails(progress += 10, null, o == null ? total : o.size(), DATA_PROGRESS, "progressbar.entite.Echantillons",
          null);
-      launchSQLproc(3, o);
+      launchSQLproc(3, o, false);
 
       fillAnnotation(ConfigManager.ENTITE_ID_ECHANTILLON);
 
@@ -730,7 +741,7 @@ public class Export extends Thread
       log.debug("export derives");
 
       setExportDetails(progress += 10, null, total, DATA_PROGRESS, "progressbar.entite.ProduitsDerives", null);
-      launchSQLproc(8, null);
+      launchSQLproc(8, null, false);
 
       fillAnnotation(ConfigManager.ENTITE_ID_DERIVE);
 
@@ -785,7 +796,7 @@ public class Export extends Thread
       log.debug("export cession");
 
       setExportDetails(progress += 10, null, total, DATA_PROGRESS, "progressbar.entite.Cessions", null);
-      launchSQLproc(5, null);
+      launchSQLproc(5, null, false);
 
       fillAnnotation(ConfigManager.ENTITE_ID_CESSION);
 
@@ -1279,7 +1290,7 @@ public class Export extends Thread
       }
    }
 
-   private void launchSQLproc(final int entiteId, final List<Integer> o) throws SQLException, InterruptedException{
+   private void launchSQLproc(final int entiteId, final List<Integer> o, final boolean modeOfsep) throws SQLException, InterruptedException{
 
       if(Thread.interrupted()){
          throw new InterruptedException();
@@ -1289,14 +1300,24 @@ public class Export extends Thread
          String create = "";
          String fill = "";
          if(entiteId == 1){ // PATIENT
-            create = "{call create_tmp_patient_table()}";
-            fill = "{call fill_tmp_table_patient(?)}";
+        	 if(modeOfsep) {
+        		 create = "{call create_tmp_patient_ofsep_table()}";
+        		 fill = "{call fill_tmp_table_patient_ofsep(?)}";
+        	 } else {
+        		 create = "{call create_tmp_patient_table()}";
+                 fill = "{call fill_tmp_table_patient(?)}";
+        	 }
          }else if(entiteId == 7){ // MALADIE
             create = "{call create_tmp_maladie_table()}";
             fill = "{call fill_tmp_table_maladie(?)}";
          }else if(entiteId == 2){ // PRELEVEMENT
-            create = "{call create_tmp_prelevement_table()}";
-            fill = "{call fill_tmp_table_prel(?)}";
+        	 if(modeOfsep) {
+        		 create = "{call create_tmp_prelevement_ofsep_table()}";
+                 fill = "{call fill_tmp_table_prel_ofsep(?)}";
+        	 } else {
+        		 create = "{call create_tmp_prelevement_table()}";
+                 fill = "{call fill_tmp_table_prel(?)}";
+        	 }
          }else if(entiteId == 3){ // ECHANTILLON
             create = "{call create_tmp_echantillon_table()}";
             fill = "{call fill_tmp_table_echan(?)}";
