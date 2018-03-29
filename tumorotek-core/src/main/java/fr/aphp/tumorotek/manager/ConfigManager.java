@@ -38,6 +38,7 @@ public class ConfigManager
    public static final short TVGSO_EXPORT = 3;
    public static final short BIOCAP_EXPORT = 4;
    public static final short BIOBANQUES_EXPORT = 5; //@since 2.1
+   public static final short OFSEP_EXPORT = 6; //@since 2.2
 
    // BIOCAP
    // public static final String BIOCAP_XSLT_FILE = "/xslt/biocap_xslt.xsl";

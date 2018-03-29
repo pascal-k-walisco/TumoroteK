@@ -179,8 +179,23 @@ import fr.aphp.tumorotek.model.utils.Utils;
       query = "SELECT count(p) FROM Prelevement p" + " WHERE p.preleveur = ?1"),
    @NamedQuery(name = "Prelevement.findByOperateur", query = "SELECT e FROM Prelevement e " + "WHERE e.operateur = (?1)"),
    @NamedQuery(name = "Prelevement.findByService", query = "SELECT e FROM Prelevement e " + "WHERE e.servicePreleveur = (?1)"),
-   @NamedQuery(name = "Prelevement.findByPatientAndBanques",
-      query = "SELECT e FROM Prelevement e " + "WHERE e.maladie.patient = ?1 AND e.banque in (?2)")})
+   @NamedQuery(name = "Prelevement.findAllCreatedSinceDateByBankAndUser",
+		query = "SELECT p "
+      		+ "FROM Prelevement p, Operation o "
+		    + "WHERE o.entite.entiteId = 2 "
+		    + "AND o.operationType.operationTypeId = 3 "
+		    + "AND o.objetId = p.prelevementId "
+    	    + "AND o.date >= ?1 "
+    	    + "AND p.banque = ?2 "
+   			+ "AND o.utilisateur = ?3 "),
+   @NamedQuery(name = "Prelevement.findAllCreatedSinceDateByBank",
+   		query = "SELECT p "
+      		+ "FROM Prelevement p, Operation o "
+		    + "WHERE o.entite.entiteId = 2 "
+		    + "AND o.operationType.operationTypeId = 3 "
+		    + "AND o.objetId = p.prelevementId "
+    	    + "AND o.date >= ?1 "
+    	    + "AND p.banque = ?2 ")})
 public class Prelevement implements TKAnnotableObject, Serializable
 {
 
@@ -227,6 +242,9 @@ public class Prelevement implements TKAnnotableObject, Serializable
 
    private PrelevementDelegate delegate;
 
+   private Boolean wrongDatePeremption;
+   private Boolean wrongDateArrive;
+   
    public Prelevement(){}
 
    @Override
@@ -629,8 +647,25 @@ public class Prelevement implements TKAnnotableObject, Serializable
    public void setRisques(final Set<Risque> risks){
       this.risques = risks;
    }
+   
+   	@Transient
+	public Boolean getWrongDatePeremption() {
+		return wrongDatePeremption;
+	}
+	
+	public void setWrongDatePeremption(Boolean wrongDatePeremption) {
+		this.wrongDatePeremption = wrongDatePeremption;
+	}
+	@Transient
+	public Boolean getWrongDateArrive() {
+		return wrongDateArrive;
+	}
+	
+	public void setWrongDateArrive(Boolean wrongDateArrive) {
+		this.wrongDateArrive = wrongDateArrive;
+	}
 
-   /**
+/**
     * 2 prélèvements sont considérés comme égaux s'ils ont le même
     * code et la même banque.
     * @param obj est le prélèvement à tester.

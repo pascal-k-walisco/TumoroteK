@@ -707,7 +707,7 @@ public class ListeEchantillon extends AbstractListeController2
       // csv export
       onLaterExportCatalogue(false, ConfigManager.BIOBANQUES_EXPORT, true, null);
    }
-
+   
    public void onClick$exportItemTVGSO(){
       onLaterExportCatalogue(true, ConfigManager.TVGSO_EXPORT, false, null);
    }

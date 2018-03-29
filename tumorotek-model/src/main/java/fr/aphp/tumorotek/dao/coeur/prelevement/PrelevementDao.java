@@ -50,6 +50,7 @@ import fr.aphp.tumorotek.model.contexte.Banque;
 import fr.aphp.tumorotek.model.contexte.Collaborateur;
 import fr.aphp.tumorotek.model.contexte.Plateforme;
 import fr.aphp.tumorotek.model.contexte.Service;
+import fr.aphp.tumorotek.model.utilisateur.Utilisateur;
 
 /**
  *
@@ -434,4 +435,27 @@ public interface PrelevementDao extends GenericDaoJpa<Prelevement, Integer>
     * @since 2.0.13
     */
    List<Prelevement> findByPatientAndBanques(Patient p, List<Banque> banks);
+   
+
+   /**
+    * Renvoie tous les prélèvements saisis (créé en base) depuis les dernières 48h d'une banque par un utilisateur
+    * les collections d'une plateforme passée en paramètre.
+    * @param date
+    * @param banque
+    * @param utilisateur
+    * @return liste prélèvement
+    * @since 2.2
+    */
+   List<Prelevement> findAllCreatedSinceDateByBankAndUser(Calendar calendar, Banque banque, Utilisateur utilisateur);
+   
+   /**
+    * Renvoie tous les prélèvements saisis (créé en base) depuis les dernières 48h d'une banque
+    * les collections d'une plateforme passée en paramètre.
+    * @param date
+    * @param banque
+    * @return liste prélèvement
+    * @since 2.2
+    */
+   List<Prelevement> findAllCreatedSinceDateByBank(Calendar calendar, Banque banque);
+   
 }

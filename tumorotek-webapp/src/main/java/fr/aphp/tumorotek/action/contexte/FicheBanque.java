@@ -157,6 +157,7 @@ public class FicheBanque extends AbstractFicheCombineController
    private Combobox collabBox;
    private Combobox contactBox;
    private Div contactBoxDiv;
+   private Textbox contactArcBox;
    private Checkbox defMaladieBox;
    private Textbox defautLibBox;
    private Textbox defautCodeBox;
@@ -250,7 +251,7 @@ public class FicheBanque extends AbstractFicheCombineController
             this.couleurEchanLabel, this.couleurDeriveLabel, this.menuBar, this.gridCatalogues, this.archiveLabel});
 
       setObjBoxsComponents(new Component[] {this.nomBox, this.idBox, this.descrBox, this.proprioBox, this.respBoxDiv,
-         this.contactBoxDiv, this.defMaladieBox, this.defautLibBox, this.defautCodeBox, this.autoCrossBox, this.contexteBox,
+         this.contactBoxDiv, this.contactArcBox, this.defMaladieBox, this.defautLibBox, this.defautCodeBox, this.autoCrossBox, this.contexteBox,
          this.couleurEchanBox, this.couleurDeriveBox,
          //this.checkCataCol,
          this.cataloguesBox, this.archiveBox});

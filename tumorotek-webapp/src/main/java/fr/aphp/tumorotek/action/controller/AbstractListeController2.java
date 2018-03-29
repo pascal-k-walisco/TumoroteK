@@ -94,6 +94,7 @@ import fr.aphp.tumorotek.model.TKAnnotableObject;
 import fr.aphp.tumorotek.model.TKStockableObject;
 import fr.aphp.tumorotek.model.TKdataObject;
 import fr.aphp.tumorotek.model.coeur.annotation.TableAnnotation;
+import fr.aphp.tumorotek.model.coeur.prelevement.Prelevement;
 import fr.aphp.tumorotek.model.contexte.Banque;
 import fr.aphp.tumorotek.model.imprimante.AffectationImprimante;
 import fr.aphp.tumorotek.model.qualite.OperationType;
@@ -123,11 +124,17 @@ public abstract class AbstractListeController2 extends AbstractController
 
    protected Checkbox checkAll;
 
+   protected Menuitem sendMailItem;
+   
    protected Menuitem modificationItem;
 
    protected Menuitem exportItem;
 
    protected Menuitem exportItemAdv;
+   
+   protected Menuitem exportItemOfsep;
+   
+   protected Menuitem importItemOfsep;
 
    protected Menuitem etiquetteItem;
 
@@ -579,6 +586,9 @@ public abstract class AbstractListeController2 extends AbstractController
     * venant de la liste en fonction des droits sur les opérations.
     */
    public void disableObjetsSelectionItems(final boolean disable){
+	  if(sendMailItem != null){
+		  sendMailItem.setDisabled(disable || !isCanModifMultiple() || getSelectedObjects().size() < 1);
+	  }
       if(modificationItem != null){
          modificationItem.setDisabled(disable || !isCanModifMultiple() || getSelectedObjects().size() < 2);
       }
@@ -587,6 +597,12 @@ public abstract class AbstractListeController2 extends AbstractController
       }
       if(exportItemAdv != null && exportItemAdv.isVisible()){
          exportItemAdv.setDisabled(disable || !isCanExport() || getSelectedObjects().size() < 1);
+      }
+      if(exportItemOfsep != null){
+    	  exportItemOfsep.setDisabled(disable || !isCanExport() || getSelectedObjects().size() < 1);
+      }
+      if(importItemOfsep != null){
+    	  importItemOfsep.setDisabled(disable || !isCanExport() || getSelectedObjects().size() < 0);
       }
       if(changeCollectionItem != null){
          changeCollectionItem.setDisabled(disable || !isCanExport() || getSelectedObjects().size() < 1);
@@ -863,6 +879,48 @@ public abstract class AbstractListeController2 extends AbstractController
    public void onClick$exportItemAdv(){
       openRestrictTablesModale(this, null, getObjectTabController().getEntiteTab());
    }
+   
+   /**
+    * Clique sur le bouton exportItem
+    * @throws ClassNotFoundException
+    * @throws InstantiationException
+    * @throws IllegalAccessException
+    * @throws IllegalArgumentException
+    * @throws InvocationTargetException
+    * @throws NoSuchMethodException
+    * @throws SecurityException
+    */
+   public void onClick$exportItemOfsep(){
+      onLaterExportOfsep(true);
+   }
+
+   
+   /**
+    * Clique sur le bouton exportItem
+    * @throws ClassNotFoundException
+    * @throws InstantiationException
+    * @throws IllegalAccessException
+    * @throws IllegalArgumentException
+    * @throws InvocationTargetException
+    * @throws NoSuchMethodException
+    * @throws SecurityException
+    */
+   public void onClick$importItemOfsep(){
+      onLaterExport(true);
+   }
+
+   
+   /**
+    * Export affichant la modale permettant la restriction
+    * des tables d'annotations concernées par l'export.
+    * @since 2.0.10
+    */
+   public void onClick$sendMailItem(){
+	   getResultatsIds().clear();
+       extractIdsFromList((List<TKdataObject>) getSelectedObjects(), getResultatsIds());
+	   final List<Prelevement> prelevements = new ArrayList<>(ManagerLocator.getPrelevementManager().findByIdsInListManager(resultatsIds));
+	   getObjectTabController().getPrelevementController().generateAndOpenMails(prelevements);
+   }
 
    /**
     * Evenement relayant l'export d'un trop grand nombre de
@@ -890,13 +948,14 @@ public abstract class AbstractListeController2 extends AbstractController
    public void onDoExportBIOCAP(){}
 
    public void onDoExportBIOBANQUES(){}
+   
+   public void onDoExportOFSEP(){}
 
    /**
     * Lance l'export à partir d'une selection ou d'une recherche
     * vide
     * @param fromSelection
     */
-   
    public void onLaterExport(final boolean fromSelection){
       if(fromSelection){
          getResultatsIds().clear();
@@ -920,6 +979,51 @@ public abstract class AbstractListeController2 extends AbstractController
             boolean.class, short.class, Utilisateur.class, List.class, HtmlMacroComponent.class, Map.class);
          final Object o = constr.newInstance(desktop, getObjectTabController().getEntiteTab().getEntiteId(), getResultatsIds(),
             SessionUtils.getSelectedBanques(sessionScope), isAnonyme(), ConfigManager.DEFAULT_EXPORT,
+            SessionUtils.getLoggedUser(sessionScope), getRestrictedTableIds(), callProgressBar(), null);
+         final Method method = exportThread.getMethod("start");
+
+         // put into session
+         if(!desktop.hasAttribute("threads")){
+            desktop.setAttribute("threads", new ArrayList<Export>());
+         }
+         ((List<Export>) desktop.getAttribute("threads")).add((Export) o);
+
+         method.invoke(o);
+
+         getRestrictedTableIds().clear();
+      }catch(final Exception e){
+         e.printStackTrace();
+      }
+   }
+   
+   /**
+    * Lance l'export à partir d'une selection ou d'une recherche
+    * vide
+    * @param fromSelection
+    */
+   public void onLaterExportOfsep(final boolean fromSelection){
+      if(fromSelection){
+         getResultatsIds().clear();
+         extractIdsFromList((List<TKdataObject>) getSelectedObjects(), getResultatsIds());
+      }
+      try{
+         // ajoute toutes les tables disponibles aucune restriction
+         if(getRestrictedTableIds() != null){
+            if(getRestrictedTableIds().isEmpty()){
+               for(final TableAnnotation tb : ManagerLocator.getTableAnnotationManager()
+                  .findByBanquesManager(SessionUtils.getSelectedBanques(sessionScope), true)){
+                  getRestrictedTableIds().add(tb.getTableAnnotationId());
+               }
+            }
+         }else{
+            setRestrictedTableIds(new ArrayList<Integer>());
+         }
+
+         final Class<?> exportThread = Class.forName(SessionUtils.getDatabasePathClass());
+         final Constructor<?> constr = exportThread.getConstructor(Desktop.class, int.class, List.class, List.class,
+            boolean.class, short.class, Utilisateur.class, List.class, HtmlMacroComponent.class, Map.class);
+         final Object o = constr.newInstance(desktop, getObjectTabController().getEntiteTab().getEntiteId(), getResultatsIds(),
+            SessionUtils.getSelectedBanques(sessionScope), isAnonyme(), ConfigManager.OFSEP_EXPORT,
             SessionUtils.getLoggedUser(sessionScope), getRestrictedTableIds(), callProgressBar(), null);
          final Method method = exportThread.getMethod("start");
 
@@ -1356,7 +1460,7 @@ public abstract class AbstractListeController2 extends AbstractController
       Clients.showBusy(Labels.getLabel("general.display.wait"));
       Events.echoEvent("onLaterUpdateMulti", self, null);
    }
-
+   
    public void onLaterUpdateMulti(){
       passSelectedToList();
       setCurrentObject(null);
@@ -1373,7 +1477,7 @@ public abstract class AbstractListeController2 extends AbstractController
 
       Clients.clearBusy();
    }
-
+   
    /**
     * Renvoie le nom de l'entite associée à la liste.
     *

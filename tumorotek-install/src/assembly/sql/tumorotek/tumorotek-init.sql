@@ -182,6 +182,7 @@ CREATE TABLE `BANQUE` (
   `BANQUE_ID`              INT(10)      NOT NULL DEFAULT '0',
   `COLLABORATEUR_ID`       INT(10)               DEFAULT NULL,
   `CONTACT_ID`             INT(10)               DEFAULT NULL,
+  `CONTACT_ARC`            VARCHAR(100)          DEFAULT NULL,
   `NOM`                    VARCHAR(100) NOT NULL DEFAULT '',
   `IDENTIFICATION`         VARCHAR(50)           DEFAULT NULL,
   `DESCRIPTION`            TEXT,

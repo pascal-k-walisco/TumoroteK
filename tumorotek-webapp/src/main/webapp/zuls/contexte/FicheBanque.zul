@@ -176,6 +176,23 @@
 							</div>
 						</div>
 					</row>
+					<!-- Contact ARC -->
+					<row spans="1,3">
+						<hbox>
+							<label value="${c:l('Champ.Banque.ContactArc')}" sclass="formLabel"/>		
+						</hbox>
+						<div>
+							<label id="contactArcLabel" 
+								value="@{fwinBanque$composer.banque.contactArc}" 
+								sclass="formValue" 
+							/>
+							<textbox id="contactArcBox" value="@{fwinBanque$composer.banque.contactArc,
+			        								 save-when='validateC.onClick, createC.onClick'
+			        								 load-after='editC.onClick, createC.onClick'}" 
+								width="200px" 
+							/>
+						</div>
+					</row>
 					<!-- Maladie -->
 					<row>
 						<label value="${c:l('Champ.Banque.DefMaladies')}" sclass="formLabel"/>				

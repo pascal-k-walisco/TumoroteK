@@ -1698,4 +1698,22 @@ public class PrelevementManagerImpl implements PrelevementManager
    public List<Prelevement> findByCodeInPlateformeManager(final String code, final Plateforme pf){
       return prelevementDao.findByCodeInPlateforme(code, pf);
    }
+   
+   @Override
+   public List<Prelevement> findAllCreatedDuringLast48hByBankAndUser(Banque banque, Utilisateur utilisateur){
+	  Calendar calendar = Calendar.getInstance();
+	  calendar.add(Calendar.HOUR, -48);
+      final List<Prelevement> prels = new ArrayList<>();
+      prels.addAll(prelevementDao.findAllCreatedSinceDateByBankAndUser(calendar, banque, utilisateur));
+      return prels;
+   }
+   
+   @Override
+   public List<Prelevement> findAllCreatedDuringLast48hByBank(Banque banque){
+	  Calendar calendar = Calendar.getInstance();
+	  calendar.add(Calendar.HOUR, -48);
+      final List<Prelevement> prels = new ArrayList<>();
+      prels.addAll(prelevementDao.findAllCreatedSinceDateByBank(calendar, banque));
+      return prels;
+   }
 }
