@@ -93,6 +93,7 @@ public class PatientController extends AbstractObjectTabController
    private Div modifMultiDiv;
    private Component listePatient;
    private Component listePatientBTO;
+   private Component listePatientOFSEP;
 
    @Override
    public void doAfterCompose(final Component comp) throws Exception{
@@ -103,7 +104,10 @@ public class PatientController extends AbstractObjectTabController
       if(BTO.equals(getCurrentContexte())){
          // TODO : Modifier le nom de la liste
          listePatientBTO.setVisible(true);
-      }else{
+      }else if(OFSEP.equals(getCurrentContexte())){
+          // TODO : Modifier le nom de la liste
+          listePatientOFSEP.setVisible(true);
+       }else{
          listePatient.setVisible(true);
       }
 
@@ -169,7 +173,7 @@ public class PatientController extends AbstractObjectTabController
          return ((ListePatientBTO) self.getFellow("listePatientBTO").getFellow("lwinPatientBTO")
             .getAttributeOrFellow("lwinPatientBTO$composer", true));
       }else if(OFSEP.equals(getCurrentContexte())){
-         return ((ListePatientOFSEP) self.getFellow("listePatient").getFellow("lwinPatientOFSEP")
+         return ((ListePatientOFSEP) self.getFellow("listePatientOFSEP").getFellow("lwinPatientOFSEP")
             .getAttributeOrFellow("lwinPatientOFSEP$composer", true));
       }else{
          return ((ListePatient) self.getFellow("listePatient").getFellow("lwinPatient")

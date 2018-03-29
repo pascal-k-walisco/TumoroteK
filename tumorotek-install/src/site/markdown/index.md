@@ -1,6 +1,6 @@
 #### Notes de version
 
-##### Version 2.2.0-beta-2-SNAPSHOT - Publiée le 26/03/2018
+##### Version 2.2.0-beta-2-SNAPSHOT - Publiée le 29/03/2018
 ###### Nouveautés
 - YouTrack [TKB-4](https://tumorotek.myjetbrains.com/youtrack/issue/TKB-4) : Amélioration de la signification : congélation à l'arrivé à la biothèque
 - YouTrack [TK-61] (https://tumorotek.myjetbrains.com/youtrack/issue/TK-61) : Pouvoir créer un modèle de document DOCx contenant des placeholders (clé) correspondants des champs et les remplacer par leur valeur à l'impression.

@@ -41,7 +41,10 @@
     <?component name="fichePrelevementStatic" macroURI="/zuls/prelevement/FichePrelevementStatic.zul" ?>
     <?component name="listePrelevementBTO" macroURI="/zuls/prelevement/bto/ListePrelevementBTO.zul" ?>
     <?component name="fichePrelevementStaticBTO" macroURI="/zuls/prelevement/bto/FichePrelevementStaticBTO.zul" ?>
+    <?component name="listePrelevementOFSEP" macroURI="/zuls/prelevement/ofsep/ListePrelevementOFSEP.zul" ?>
+    <?component name="fichePrelevementStaticOFSEP" macroURI="/zuls/prelevement/ofsep/FichePrelevementStaticOFSEP.zul" ?>
     <?component name="ficheLaboInter" macroURI="/zuls/prelevement/FicheLaboInter.zul" ?>
+    <?component name="ficheLaboInterOFSEP" macroURI="/zuls/prelevement/ofsep/FicheLaboInterOFSEP.zul" ?>
     <?component name="ficheMultiEchantillons" macroURI="/zuls/echantillon/FicheMultiEchantillons.zul" ?>
     <?component name="ficheAnnotation" macroURI="/zuls/annotation/FicheAnnotation.zul" ?>
 
@@ -61,6 +64,7 @@
                 <div>
                     <listePrelevement visible="false" id="listePrelevement" hflex="1" vflex="1"/>
                     <listePrelevementBTO visible="false" id="listePrelevementBTO" hflex="1" vflex="1"/>
+                    <listePrelevementOFSEP visible="false" id="listePrelevementOFSEP" hflex="1" vflex="1"/>
                 </div>
             </west>
             <center id="ficherRegion">

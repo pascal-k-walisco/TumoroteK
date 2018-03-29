@@ -6,10 +6,6 @@ import fr.aphp.tumorotek.action.patient.FichePatientStatic;
 
 public class FichePatientStaticOFSEP extends FichePatientStatic
 {
-
-   /**
-    * 
-    */
    private static final long serialVersionUID = 1L;
 
    @Override
@@ -17,6 +13,6 @@ public class FichePatientStaticOFSEP extends FichePatientStatic
 
       super.doAfterCompose(comp);
 
-      addMaladie.setVisible(false);
+      // addMaladie.setVisible(false);
    }
 }

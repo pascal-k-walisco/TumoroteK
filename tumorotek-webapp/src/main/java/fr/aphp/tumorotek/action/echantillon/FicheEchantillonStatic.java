@@ -153,14 +153,15 @@ public class FicheEchantillonStatic extends AbstractFicheStaticController
    private Vbox risquesBox;
 
    // Objets Principaux.
-   private Echantillon echantillon = new Echantillon();
+   protected Echantillon echantillon = new Echantillon();
    private Prelevement prelevement;
    private List<ProdDerive> derives = new ArrayList<>();
    private List<CederObjetDecorator> cedesDecorated = new ArrayList<>();
 
    // Variables formulaire.
    private String valeurQuantite = "";
-   private String delaiLabel = "";
+   protected String delaiLabel = "";
+   protected Label delaiCglLabel;
    private String prodDerivesGroupHeader;
    private String cessionsGroupHeader;
    private String sortiesGroupHeader;

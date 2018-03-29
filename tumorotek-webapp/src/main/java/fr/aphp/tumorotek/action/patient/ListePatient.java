@@ -76,12 +76,12 @@ public class ListePatient extends AbstractListeController2
    private String searchNomPatient;
    private String searchNipPatient;
 
-   private Column maladiesCol;
+   protected Column maladiesCol;
    private Column nbPrelevementsColumn;
 
-   private final PatientRowRenderer listObjectsRenderer = new PatientRowRenderer(true);
-   private PatientsNbPrelevementsComparator comparatorAsc = new PatientsNbPrelevementsComparator(true);
-   private PatientsNbPrelevementsComparator comparatorDesc = new PatientsNbPrelevementsComparator(false);
+   protected final PatientRowRenderer listObjectsRenderer = new PatientRowRenderer(true);
+   protected PatientsNbPrelevementsComparator comparatorAsc = new PatientsNbPrelevementsComparator(true);
+   protected PatientsNbPrelevementsComparator comparatorDesc = new PatientsNbPrelevementsComparator(false);
 
    /** Getters-setters. **/
 

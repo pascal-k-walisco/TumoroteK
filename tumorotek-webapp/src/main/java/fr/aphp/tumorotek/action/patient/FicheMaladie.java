@@ -220,7 +220,7 @@ public class FicheMaladie extends AbstractFicheCombineController
    }
 
    public Component getFichePatientComponent(){
-      return self.getRoot().getFellow("main").getFellow("winPatient").getFellow("fwinPatientStatic");
+	  return self.getRoot().getFellow("main").getFellow("winPatient").getFellow("fwinPatientStatic");
    }
 
    public FichePatientStatic getFichePatient(){
@@ -789,11 +789,11 @@ public class FicheMaladie extends AbstractFicheCombineController
          // save les bindings de la fiche patient embedded avant validation
          if(this.isEmbeddedWithPatient){
             final Component embeddedPatient = self.getParent().getParent().getFellow("fichePatientDiv");
-
-            if(embeddedPatient.getFellowIfAny("fwinPatientEdit") != null){
-               ((FichePatientEdit) embeddedPatient.getFellow("fwinPatientEdit").getAttributeOrFellow("fwinPatientEdit$composer",
-                  true)).getBinder().saveComponent(embeddedPatient.getFellow("fwinPatientEdit"));
-            }
+            
+           if(embeddedPatient.getFellowIfAny("fwinPatientEdit") != null){
+              ((FichePatientEdit) embeddedPatient.getFellow("fwinPatientEdit").getAttributeOrFellow("fwinPatientEdit$composer",
+                 true)).getBinder().saveComponent(embeddedPatient.getFellow("fwinPatientEdit"));
+           }	
          }
 
          // date diagnostic

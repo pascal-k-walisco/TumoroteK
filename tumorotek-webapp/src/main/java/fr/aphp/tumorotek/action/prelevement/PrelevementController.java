@@ -36,6 +36,7 @@
 package fr.aphp.tumorotek.action.prelevement;
 
 import static fr.aphp.tumorotek.model.contexte.EContexte.BTO;
+import static fr.aphp.tumorotek.model.contexte.EContexte.OFSEP;
 import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
 
 import java.util.ArrayList;
@@ -76,6 +77,8 @@ import fr.aphp.tumorotek.action.echantillon.FicheMultiEchantillons;
 import fr.aphp.tumorotek.action.patient.PatientController;
 import fr.aphp.tumorotek.action.prelevement.bto.FichePrelevementStaticBTO;
 import fr.aphp.tumorotek.action.prelevement.bto.ListePrelevementBTO;
+import fr.aphp.tumorotek.action.prelevement.ofsep.FichePrelevementStaticOFSEP;
+import fr.aphp.tumorotek.action.prelevement.ofsep.ListePrelevementOFSEP;
 import fr.aphp.tumorotek.action.prelevement.serotk.PrelevementSeroRowRenderer;
 import fr.aphp.tumorotek.action.prodderive.ProdDeriveController;
 import fr.aphp.tumorotek.model.TKAnnotableObject;
@@ -113,7 +116,8 @@ public class PrelevementController extends AbstractObjectTabController
    private Div modifMultiDiv;
    private Component listePrelevement;
    private Component listePrelevementBTO;
-
+   private Component listePrelevementOFSEP;
+   
    // flag ordonnant le retour vers la fiche patient
    // et rafraichissement et ouverture panel maladie
    private boolean fromFichePatient = false;
@@ -171,7 +175,9 @@ public class PrelevementController extends AbstractObjectTabController
 
       if(BTO.equals(getCurrentContexte())){
          listePrelevementBTO.setVisible(true);
-      }else{
+      }else if(OFSEP.equals(getCurrentContexte())){
+         listePrelevementOFSEP.setVisible(true);
+      }else {
          listePrelevement.setVisible(true);
       }
 
@@ -181,7 +187,10 @@ public class PrelevementController extends AbstractObjectTabController
       if(BTO.equals(getCurrentContexte())){
          setEditZulPath("/zuls/prelevement/bto/FichePrelevementEditBTO.zul");
          setListZulPath("/zuls/prelevement/bto/ListePrelevementBTO.zul");
-      }else{
+      }else if(OFSEP.equals(getCurrentContexte())){
+          setEditZulPath("/zuls/prelevement/ofsep/FichePrelevementEditOFSEP.zul");
+          setListZulPath("/zuls/prelevement/ofsep/ListePrelevementOFSEP.zul");
+       }else{
          setEditZulPath("/zuls/prelevement/FichePrelevementEdit.zul");
          setListZulPath("/zuls/prelevement/ListePrelevement.zul");
       }
@@ -214,7 +223,9 @@ public class PrelevementController extends AbstractObjectTabController
    public void populateFicheStatic(){
       if(BTO.equals(getCurrentContexte())){
          setStaticZulPath("/zuls/prelevement/bto/FichePrelevementStaticBTO.zul");
-      }else if(SessionUtils.isSeroContexte(sessionScope)){
+      }else if(OFSEP.equals(getCurrentContexte())){
+          setStaticZulPath("/zuls/prelevement/ofsep/FichePrelevementStaticOFSEP.zul");
+       }else if(SessionUtils.isSeroContexte(sessionScope)){
          setStaticZulPath("/zuls/prelevement/serotk/FichePrelevementStaticSero.zul");
       }else{
          setStaticZulPath("/zuls/prelevement/FichePrelevementStatic.zul");
@@ -235,6 +246,9 @@ public class PrelevementController extends AbstractObjectTabController
       if(BTO.equals(getCurrentContexte())){
          return ((FichePrelevementStaticBTO) this.self.getFellow("divPrelevementStatic").getFellow("fwinPrelevementStaticBTO")
             .getAttributeOrFellow("fwinPrelevementStaticBTO$composer", true));
+      }else if(OFSEP.equals(getCurrentContexte())){
+    	 return ((FichePrelevementStaticOFSEP) this.self.getFellow("divPrelevementStatic").getFellow("fwinPrelevementStaticOFSEP")
+            .getAttributeOrFellow("fwinPrelevementStaticOFSEP$composer", true));
       }else{
          return ((FichePrelevementStatic) this.self.getFellow("divPrelevementStatic").getFellow("fwinPrelevementStatic")
             .getAttributeOrFellow("fwinPrelevementStatic$composer", true));
@@ -246,6 +260,9 @@ public class PrelevementController extends AbstractObjectTabController
       if(BTO.equals(getCurrentContexte())){
          return ((FichePrelevementEdit) this.self.getFellow("divPrelevementEdit").getFellow("fwinPrelevementEditBTO")
             .getAttributeOrFellow("fwinPrelevementEditBTO$composer", true));
+      }else if(OFSEP.equals(getCurrentContexte())){
+         return ((FichePrelevementEdit) this.self.getFellow("divPrelevementEdit").getFellow("fwinPrelevementEditOFSEP")
+            .getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true));
       }else{
          return ((FichePrelevementEdit) this.self.getFellow("divPrelevementEdit").getFellow("fwinPrelevementEdit")
             .getAttributeOrFellow("fwinPrelevementEdit$composer", true));
@@ -258,8 +275,12 @@ public class PrelevementController extends AbstractObjectTabController
          return ((ListePrelevementBTO)
          //this.self.getFellow("listePrelevement")
          // self.getFellow("lwinPrelevement")
-         self.getFellow("listePrelevementBTO").getFellow("lwinPrelevementBTO").getAttributeOrFellow("lwinPrelevementBTO$composer",
-            true));
+         self.getFellow("listePrelevementBTO").getFellow("lwinPrelevementBTO").getAttributeOrFellow("lwinPrelevementBTO$composer", true));
+      }else if(OFSEP.equals(getCurrentContexte())){
+         return ((ListePrelevementOFSEP)
+         //this.self.getFellow("listePrelevement")
+         // self.getFellow("lwinPrelevement")
+         self.getFellow("listePrelevementOFSEP").getFellow("lwinPrelevementOFSEP").getAttributeOrFellow("lwinPrelevementOFSEP$composer", true));
       }else{
          return ((ListePrelevement)
          //this.self.getFellow("listePrelevement")
@@ -303,7 +324,12 @@ public class PrelevementController extends AbstractObjectTabController
          return ((FicheAnnotationInline) self.getFellow("divPrelevementEdit").getFellow("fwinPrelevementEditBTO")
             .getFellow("ficheTissuInlineAnnoPrelevement").getFellow("fwinAnnotationInline")
             .getAttributeOrFellow("fwinAnnotationInline$composer", true));
-      }else{
+      }else if(null != self.getFellow("divPrelevementEdit").getFellowIfAny("fwinPrelevementEditOFSEP") && null != self
+    	         .getFellow("divPrelevementEdit").getFellow("fwinPrelevementEditOFSEP").getFellow("ficheTissuInlineAnnoPrelevement")){
+          return ((FicheAnnotationInline) self.getFellow("divPrelevementEdit").getFellow("fwinPrelevementEditOFSEP")
+             .getFellow("ficheTissuInlineAnnoPrelevement").getFellow("fwinAnnotationInline")
+             .getAttributeOrFellow("fwinAnnotationInline$composer", true));
+       }else{
          return null;
       }
    }
@@ -409,7 +435,11 @@ public class PrelevementController extends AbstractObjectTabController
       //divMultiEchantillons.setVisible(false);
 
       if(divLaboInter.getChildren().size() == 0){
-         Executions.createComponents("/zuls/prelevement/FicheLaboInter.zul", divLaboInter, null);
+    	 if(OFSEP.equals(getCurrentContexte())){
+            Executions.createComponents("/zuls/prelevement/ofsep/FicheLaboInterOFSEP.zul", divLaboInter, null);
+    	 }else {
+    		Executions.createComponents("/zuls/prelevement/FicheLaboInter.zul", divLaboInter, null);
+    	 }
          getFicheLaboInter().setObjectTabController(this);
          getFicheLaboInter().setObject(edit);
          getFicheLaboInter().switchToEditMode();
@@ -431,7 +461,12 @@ public class PrelevementController extends AbstractObjectTabController
       //divMultiEchantillons.setVisible(false);
 
       if(divLaboInter.getChildren().size() == 0){
-         Executions.createComponents("/zuls/prelevement/FicheLaboInter.zul", divLaboInter, null);
+    	 if(OFSEP.equals(getCurrentContexte())){
+            Executions.createComponents("/zuls/prelevement/ofsep/FicheLaboInterOFSEP.zul", divLaboInter, null);
+      	 }else {
+      		Executions.createComponents("/zuls/prelevement/FicheLaboInter.zul", divLaboInter, null);
+      	 }
+         
          getFicheLaboInter().setObjectTabController(this);
          getFicheLaboInter().setObject(newPrlvt);
          getFicheLaboInter().setOldLaboInters(labos);
@@ -528,16 +563,30 @@ public class PrelevementController extends AbstractObjectTabController
     * @return fiche FicheLaboInter
     */
    public FicheLaboInter getFicheLaboInter(){
-      return ((FicheLaboInter) this.self.getFellow("divLaboInter").getFellow("fwinLaboInter")
-         .getAttributeOrFellow("fwinLaboInter$composer", true));
+	  if(OFSEP.equals(getCurrentContexte())){
+		 return ((FicheLaboInter) this.self.getFellow("divLaboInter").getFellow("fwinLaboInterOFSEP")
+            .getAttributeOrFellow("fwinLaboInterOFSEP$composer", true));
+	  }else {
+		 return ((FicheLaboInter) this.self.getFellow("divLaboInter").getFellow("fwinLaboInter")
+		            .getAttributeOrFellow("fwinLaboInter$composer", true));  
+	  }
    }
 
    public boolean hasFicheLaboInter(){
-      if(this.self.getFellow("divLaboInter").getFellowIfAny("fwinLaboInter") != null){
-         return true;
-      }else{
-         return false;
-      }
+	  if(OFSEP.equals(getCurrentContexte())){
+	     if(this.self.getFellow("divLaboInter").getFellowIfAny("fwinLaboInterOFSEP") != null){
+		    return true;
+	     }else{
+			return false;
+	     } 
+	  }else {
+         if(this.self.getFellow("divLaboInter").getFellowIfAny("fwinLaboInter") != null){
+		    return true;
+		 }else{
+		    return false;
+		 }  
+	  }
+	  
    }
 
    public boolean isFicheLaboOpened(){
@@ -652,10 +701,12 @@ public class PrelevementController extends AbstractObjectTabController
 
          // si il y eu edit avant et addNew depuis liste
          clearEditDiv();
-         if(!BTO.equals(getCurrentContexte())){
-            Executions.createComponents("/zuls/prelevement/FichePrelevementEdit.zul", divPrelevementEdit, null);
-         }else{
-            Executions.createComponents("/zuls/prelevement/bto/FichePrelevementEditBTO.zul", divPrelevementEdit, null);
+         if(BTO.equals(getCurrentContexte())){
+        	Executions.createComponents("/zuls/prelevement/bto/FichePrelevementEditBTO.zul", divPrelevementEdit, null);
+         }else if(OFSEP.equals(getCurrentContexte())){
+         	Executions.createComponents("/zuls/prelevement/ofsep/FichePrelevementEditOFSEP.zul", divPrelevementEdit, null);
+          }else{
+        	Executions.createComponents("/zuls/prelevement/FichePrelevementEdit.zul", divPrelevementEdit, null);
          }
          getFicheEdit().setObjectTabController(this);
          getFicheEdit().setNewObjectByCopy(prlvt);

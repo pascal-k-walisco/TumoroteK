@@ -44,26 +44,25 @@
 			span="true"
 			sizedByContent="true"
 			sclass="gridListStyle"
-			model="@{lwinPatientBTO$composer.listObjects
-			load-after='findByListPatientNoms.onClick,
-					findByListPatientNips.onClick'}"
-			rowRenderer="${lwinPatientBTO$composer.listObjectsRenderer}">
+			model="@{lwinPatientOFSEP$composer.listObjects
+			load-after='findByListPatientNoms.onClick'}"
+			rowRenderer="${lwinPatientOFSEP$composer.listObjectsRenderer}">
 			<columns menupopup="auto" sizable="true" width="100%">
 				<column width="40px">
 					<checkbox id="checkAll"/>
 				</column>
-				<column label="${c:l('Champ.Patient.Nom')}" sort="auto(nom)" />
-				<column label="${c:l('Champ.Patient.Prenom')}"/>
-				<column label="${c:l('Champ.Patient.NCristal')}"  />
+				<column label="${c:l('Champ.Patient.IdEdmus')}" sort="auto(nom)" />
+				<column label="${c:l('Champ.Patient.Prenom')}" visible="false"/>
+				<column label="${c:l('Champ.Patient.Nip')}"  visible="false"/>
 				<column label="${c:l('Champ.Patient.Sexe')}" sort="auto(sexe)" />
 				<column label="${c:l('Champ.Patient.DateNaissance')}" sort="auto(dateNaissance)" />
-				<column label="${c:l('Champ.Patient.TypeDonner')}"/>
+				<column label="${c:l('Champ.Patient.PatientEtat')}" visible="false"/>
 				<column label="${c:l('Champ.Patient.DateEtat')}" visible="false"/>
-				<column id="maladiesCol" label="${c:l('patient.maladies')}" visible="false"
+				<column id="maladiesCol" label="${c:l('patient.maladies')}"
 					width="200px"/>
-				<column label="${c:l('patient.nbPrelevements')}"  visible="false"
+				<column label="${c:l('patient.nbPrelevements')}" 
 					sort="auto" id="nbPrelevementsColumn" />
-				<column label="${c:l('Champ.Echantillon.Organe')}" visible="false"/>
+				<column label="${c:l('Champ.Echantillon.Organe')}"/>
 			</columns>
 			<rows>
 				<row self="@{each='currPatient'}" value="currPatient"/>
@@ -72,7 +71,7 @@
 	</panelchildren>
 	
 </panel>
-<panel title="${c:l('general.recherche.rapide')}" collapsible="false" height="150px"
+<panel title="${c:l('general.recherche.rapide')}" collapsible="false" height="130px"
 sclass="panelv2">
 	<panelchildren>
 		<radiogroup id="criteresRadioGroup">
@@ -84,20 +83,20 @@ sclass="panelv2">
 							sclass="formLabel"/>
 					</div>
 					<listbox id="dateCreationBox" mold="select" rows="1"
-					model="@{lwinPatientBTO$composer.creationDates}">
+					model="@{lwinPatientOFSEP$composer.creationDates}">
 						<listitem self="@{each='date'}" value="@{date}">			
 							<listcell label="@{date}" />
 						</listitem>
 					</listbox>
 				</hlayout>
-				<hlayout sclass="z-valign-bottom">
+				<hlayout sclass="z-valign-bottom" visible="false">
 					<radio id="nipPatient"/>
 					<div width="150px">
 						<label value="${c:l('listePatient.critere.nip')}" 
 						sclass="formLabel"/>
 					</div>
 					<textbox id="nipBoxPatient" 
-					value="@{lwinPatientBTO$composer.searchNipPatient,
+					value="@{lwinPatientOFSEP$composer.searchNipPatient,
 					save-when='find.onClick, self.onOK'}"
 					width="100px"
 					forward="onOK=onPressEnterKey()"
@@ -110,10 +109,10 @@ sclass="panelv2">
 				<hlayout sclass="z-valign-bottom">
 					<radio id="nomPatient"/>
 					<div width="150px">
-						<label value="${c:l('listePatient.critere.nom')}" sclass="formLabel"/>
+						<label value="${c:l('listePatient.critere.IdEdmus')}" sclass="formLabel"/>
 					</div>
 					<textbox id="nomBoxPatient" 
-						value="@{lwinPatientBTO$composer.searchNomPatient,
+						value="@{lwinPatientOFSEP$composer.searchNomPatient,
 	        			save-when='find.onClick, self.onOK'}" 
 						width="100px" 
 						forward="onOK=onPressEnterKey()"

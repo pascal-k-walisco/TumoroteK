@@ -123,6 +123,7 @@ public class FicheEchantillonEdit extends AbstractFicheEditController
    protected Listbox prepasBox;
    protected Listbox qualitesBoxEchan;
    protected CalendarBox dateStockCalBox;
+   protected Div delaiCglBox;
    protected Intbox heureBox;
    protected Intbox minBox;
    protected Checkbox tumoraleBox;
@@ -144,12 +145,12 @@ public class FicheEchantillonEdit extends AbstractFicheEditController
    protected Listbox nonConformitesCessionBox;
 
    // Objets Principaux.
-   private Echantillon echantillon = new Echantillon();
+   protected Echantillon echantillon = new Echantillon();
    private String selectedLateralite = "";
 
    // Associations.
    private List<EchantillonType> types = new ArrayList<>();
-   private EchantillonType selectedType;
+   protected EchantillonType selectedType;
    private List<Collaborateur> collaborateurs = new ArrayList<>();
    private Collaborateur selectedCollaborateur;
    private List<String> nomsAndPrenoms = new ArrayList<>();
@@ -176,8 +177,8 @@ public class FicheEchantillonEdit extends AbstractFicheEditController
    // Variables formulaire.
    private String valeurQuantite = "";
    private String valeurQuantiteRestante = "";
-   private Integer heureDelai = null;
-   private Integer minDelai = null;
+   protected Integer heureDelai = null;
+   protected Integer minDelai = null;
    protected String codePrefixe = "";
    //	private String codeSuffixe = "";
    private String emplacementAdrl = "";
@@ -1923,7 +1924,7 @@ public class FicheEchantillonEdit extends AbstractFicheEditController
     */
    @Override
    public void onClick$validate(){
-      onBlur$dateStockCalBox();
+	  onBlur$dateStockCalBox();
       Clients.showBusy(Labels.getLabel(getWaitLabel()));
       Events.echoEvent("onLaterUpdate", self, null);
    }

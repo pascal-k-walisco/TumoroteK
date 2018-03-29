@@ -138,6 +138,7 @@ public class FichePrelevementEdit extends AbstractFicheEditController
    protected Listbox consentTypesBoxPrlvt;
    protected Listbox risquesBox;
    protected Button interfacage;
+   protected Listbox modesBoxPrlvt;
 
    protected ResumePatient resumePatient;
    protected Textbox ndaBox;
@@ -190,7 +191,7 @@ public class FichePrelevementEdit extends AbstractFicheEditController
    public Maladie getMaladie(){
       return this.maladie;
    }
-
+   
    public boolean isPatientAccessible(){
       return isPatientAccessible;
    }
@@ -394,7 +395,6 @@ public class FichePrelevementEdit extends AbstractFicheEditController
     *
     * @param risks liste à selectionner
     */
-
    public void selectRisques(final List<Risque> risks){
       if(risks != null){
          ((Selectable<Risque>) risquesBox.getModel()).setSelection(risks);

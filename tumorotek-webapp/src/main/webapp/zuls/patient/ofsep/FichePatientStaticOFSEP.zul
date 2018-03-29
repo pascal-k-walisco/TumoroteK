@@ -49,83 +49,73 @@
 					<column />
 				</columns>
 				<rows>
-					<!-- Nip patient -->
 					<row>
-						<label value="${c:l('Champ.Patient.NCristal')}" sclass="formLabel"/>
-						<label id="nipLabel" value="@{fwinPatientStaticBTO$composer.nipFormatted}" sclass="formValue" />
-						<label id="ndaFieldLabel" value="${c:l('prelevement.nda')}" sclass="formLabel" visible="false"/>
-					</row>
-					<row>
-					<!-- Nom -->
-						<label value="${c:l('Champ.Patient.Nom')}" sclass="formLabel" />
-						<label id="nomLabel" value="@{fwinPatientStaticBTO$composer.nomFormatted}" sclass="formValue" />
-							
-					<!-- Nom naissance-->
-						<label value="${c:l('Champ.Patient.NomNaissance')}" sclass="formLabel" />
-						<label id="nomNaisLabel" value="@{fwinPatientStaticBTO$composer.nomNaissanceFormatted}" sclass="formValue" />
+						<!-- Nom / ID Edmus -->
+						<label value="${c:l('Champ.Patient.IdEdmus')}" sclass="formLabel" />
+						<label id="nomLabel" value="@{fwinPatientStaticOFSEP$composer.nomFormatted}" sclass="formValue" />
 					</row>					
 					<row>
-					<!-- Prenom -->
-						<label value="${c:l('Champ.Patient.Prenom')}" sclass="formLabel" />
-						<label id="prenomLabel" value="@{fwinPatientStaticBTO$composer.prenomFormatted}" sclass="formValue" />
-					<!-- Sexe -->
+						<!-- Sexe -->
 						<box orient="horizontal" >
 							<label value="${c:l('Champ.Patient.Sexe')}" sclass="formLabel" />
 							<image src="/images/icones/codif-export.png" visible="${sessionScope.catalogues['INCa'] != null}" 
 								tooltip="inca4" style="cursor: pointer" />
 						</box>
-						<label id="sexeLabel" value="@{fwinPatientStaticBTO$composer.sexeFormatted}" sclass="formValue" />
-					
+						<label id="sexeLabel" value="@{fwinPatientStaticOFSEP$composer.sexeFormatted}" sclass="formValue" />
 					</row>	
 					
-					
-						<!-- Groupe sanguin passé en annotations -->
-<!-- 					<row> -->
-<!-- 					Groupe Sanguin -->
-<!-- 						<label value="${c:l('Champ.Patient.GroupeSanguin')}" sclass="formLabel" /> -->
-<!-- 						<label id="gpSanguinLabel" value="@{fwinPatientStaticBTO$composer.object.groupeSanguin}" sclass="formValue" />	 -->
-<!-- 					</row> -->
-					
-					<row spans="1,3">
-					<!-- Date de naissance -->
+					<row>
+						<!-- Date de naissance -->
 						<box orient="horizontal"  >
 							<label value="${c:l('Champ.Patient.DateNaissance')}" sclass="formLabel" />
 							<image src="/images/icones/codif-export.png" visible="${sessionScope.catalogues['INCa'] != null}" 
 								tooltip="inca3" style="cursor: pointer" />
 						</box>
-							<label id="dateNaisLabel"  value="@{fwinPatientStaticBTO$composer.dateNaisFormatted}" sclass="formValue" />
-							
+						<label id="dateNaisLabel"  value="@{fwinPatientStaticOFSEP$composer.dateNaisFormatted}" sclass="formValue" />
 					</row>	
+					
 					<row visible="false">
-				<!-- Pays de naissance -->
-						<label value="${c:l('Champ.Patient.PaysNaissance')}" sclass="formLabel" />
-						<label id="paysNaisLabel" value="@{fwinPatientStaticBTO$composer.object.paysNaissance}" sclass="formValue" />
-					<!-- Ville de naissance -->
-						<label value="${c:l('Champ.Patient.VilleNaissance')}" sclass="formLabel" />
-						<label id="villeNaisLabel" value="@{fwinPatientStaticBTO$composer.object.villeNaissance}" sclass="formValue" />
-					</row>
-					<row>
-				<!-- Etat patient -->
+						<!-- Nip patient -->
+							<label value="${c:l('Champ.Patient.nip')}" sclass="formLabel"/>
+							<label id="nipLabel" value="@{fwinPatientStaticOFSEP$composer.nipFormatted}" sclass="formValue" />
+							<label id="ndaFieldLabel" value="${c:l('prelevement.nda')}" sclass="formLabel" visible="false"/>
+						
+						<!-- Prenom -->
+						<label value="${c:l('Champ.Patient.Prenom')}" sclass="formLabel" />
+						<label id="prenomLabel" value="@{fwinPatientStaticOFSEP$composer.prenomFormatted}" sclass="formValue" />
+						
+						<!-- Nom naissance-->
+							<label value="${c:l('Champ.Patient.NomNaissance')}" sclass="formLabel" />
+							<label id="nomNaisLabel" value="@{fwinPatientStaticOFSEP$composer.nomNaissanceFormatted}" sclass="formValue" />
+						
+						<!-- Pays de naissance -->
+							<label value="${c:l('Champ.Patient.PaysNaissance')}" sclass="formLabel" />
+							<label id="paysNaisLabel" value="@{fwinPatientStaticOFSEP$composer.object.paysNaissance}" sclass="formValue" />
+						<!-- Ville de naissance -->
+							<label value="${c:l('Champ.Patient.VilleNaissance')}" sclass="formLabel" />
+							<label id="villeNaisLabel" value="@{fwinPatientStaticOFSEP$composer.object.villeNaissance}" sclass="formValue" />
+						<!-- Etat patient -->
 						<box orient="horizontal">
-							<label value="${c:l('Champ.Patient.TypeDonner')}" sclass="formLabel" />
+							<label value="${c:l('Champ.Patient.PatientEtat')}" sclass="formLabel" />
 							<image src="/images/icones/codif-export.png" visible="${sessionScope.catalogues['INCa'] != null}" 
 									tooltip="inca5" style="cursor: pointer" />
 						</box>
-						<label id="etatLabel" value="@{fwinPatientStaticBTO$composer.etatFormatted}" sclass="formValue" />
-					<!-- Date de l'etat/décès -->
-						<box orient="horizontal" visible="false">
+						<label id="etatLabel" value="@{fwinPatientStaticOFSEP$composer.etatFormatted}" sclass="formValue" />
+						
+						<!-- Date de l'etat/décès -->
+						<box orient="horizontal">
 							<label id="dateEtatDecesField" sclass="formLabel" value="${c:l('Champ.Patient.DateEtat')}" />
 							<image src="/images/icones/codif-export.png" visible="${sessionScope.catalogues['INCa'] != null}" 
 									tooltip="inca6" style="cursor: pointer" />
 						</box>
-						<label visible="false" id="dateEtatDecesLabel" value="@{fwinPatientStaticBTO$composer.dateEtatDecesFormatted}" sclass="formValue" />
+						<label id="dateEtatDecesLabel" value="@{fwinPatientStaticOFSEP$composer.dateEtatDecesFormatted}" sclass="formValue" />
 					</row>
 					<!-- Annotation inline -->
 					<row spans="4">
 						<ficheAnnotationInline id="ficheTissuInlineAnnoPatient" hflex="1"/>
 					</row>
 					<!-- Referents -->
-					<group visible="false" id="referentsGroup" label="@{fwinPatientStaticBTO$composer.referentsGroupHeader}"
+					<group visible="false" id="referentsGroup" label="@{fwinPatientStaticOFSEP$composer.referentsGroupHeader}"
 						style="border-bottom-width : 0px;"/>
 					<row visible="false" spans="4">
 						<div id="referentsDiv">
@@ -133,36 +123,36 @@
 						</div>
 					</row>			
 					<!-- Maladies -->
-					<group visible="false" id="maladiesGroup" label="@{fwinPatientStaticBTO$composer.maladiesGroupHeader}"
+					<group id="maladiesGroup" label="@{fwinPatientStaticOFSEP$composer.maladiesGroupHeader}"
 							style="border-bottom-width : 0px;"/>
-					<row visible="false" spans="4">
+					<row spans="4">
 						<div id="malaDiv">
 						</div>
 					</row>
-					<row  visible="false" spans="4" >
-						<separator visible="@{fwinPatientStaticBTO$composer.hasPrelevementsFromOtherMaladies}" />
+					<row  spans="4" >
+						<separator visible="@{fwinPatientStaticOFSEP$composer.hasPrelevementsFromOtherMaladies}" />
 					</row>
-					<row visible="false" spans="4">
-						<vbox visible="@{fwinPatientStaticBTO$composer.hasPrelevementsFromOtherMaladies}" width="100%" hflex="1">
+					<row spans="4">
+						<vbox visible="@{fwinPatientStaticOFSEP$composer.hasPrelevementsFromOtherMaladies}" width="100%" hflex="1">
 							<label value="${c:l('patient.prelevements.horsMaladie')}" sclass="formSubTitle"/>
 							<image src="/images/pixelble.gif" style="background-repeat: repeat-x;"/>
 						</vbox>
 					</row>
-					<row spans="4" visible="false">
+					<row spans="4">
 						<listbox  id="prelevementsFromOtherMaladiesBox" 
 								hflex="1"
 								fixedLayout="true"
 								span="true"
 								sizedByContent="false"
-								model="@{fwinPatientStaticBTO$composer.prelevementsFromOtherMaladies}"
-								itemRenderer="${fwinPatientStaticBTO$composer.prelevementsFromOtherMaladiesRenderer}"
+								model="@{fwinPatientStaticOFSEP$composer.prelevementsFromOtherMaladies}"
+								itemRenderer="${fwinPatientStaticOFSEP$composer.prelevementsFromOtherMaladiesRenderer}"
 								sclass="listBox"
 								style="font-style: italic"
-								visible="@{fwinPatientStaticBTO$composer.hasPrelevementsToShow}">
+								visible="@{fwinPatientStaticOFSEP$composer.hasPrelevementsToShow}">
 								<listhead sizable="true">
 									<listheader width="50px" />
 									<listheader label="${c:l('prelevement.datePrelevementCourt')}" />
-									<listheader label="${c:l('general.code')}"   />
+									<listheader label="${c:l('general.code')}" visible="false"/>
 									<listheader label="${c:l('Entite.Banque')}" />
 									<listheader label="${c:l('Champ.Prelevement.Nature')}" />
 									<listheader label="${c:l('general.type')}" />
@@ -200,7 +190,7 @@
 				</menubar>
 				<button id="addNew" label="${c:l('general.new')}" height="24px"
 					image="/images/icones/new.png" sclass="buttonv2" 
-					use="fr.aphp.tumorotek.component.TKDisablableButton"/>
+					use="fr.aphp.tumorotek.component.TKDisablableButton" visible="false"/>
 				<button id="edit" label="${c:l('general.edit')}" height="24px"
 					image="/images/icones/edit.png" sclass="buttonv2" disabled="true" 
 					use="fr.aphp.tumorotek.component.TKDisablableButton" />

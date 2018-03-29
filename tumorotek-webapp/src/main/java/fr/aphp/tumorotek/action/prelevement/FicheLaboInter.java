@@ -124,8 +124,8 @@ public class FicheLaboInter extends AbstractFicheEditController
 
    // Buttons
    private Button previous;
-   private Button next;
-   private Button addLabo;
+   protected Button next;
+   protected Button addLabo;
 
    /**
     *  Editable components : mode d'édition ou de création.
