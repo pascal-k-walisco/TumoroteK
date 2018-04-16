@@ -137,7 +137,7 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
    private MaladieDecorator selectedMaladieByNda = null;
    private static ListitemRenderer<Patient> patientRenderer = new PatientItemRenderer(true);
    private AnnotateDataBinder referenceurBinder;
-
+   
    @Override
    public void doAfterCompose(final Component comp) throws Exception{
       super.doAfterCompose(comp);
@@ -163,11 +163,6 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
       }else{
          newRadio.setDisabled(true);
       }
-      
-      /*if(OFSEP.equals(getCurrentContexte())){
-    	// Récupére l'id edmus dans la première partie du code prélévement 
-    	nomNipNdaBox.setValue( ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true)).codeBoxPrlvt.getValue().split(".")[0] );
-      }*/
    }
 
    public Radio getNoRadio(){
@@ -841,20 +836,25 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
          }
          
          // Récupére l'id edmus dans la première partie du code prélévement 
-         /*if(OFSEP.equals(getCurrentContexte())){
-        	final String codePrlv = ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true))
-        							   .codeBoxPrlvt.getValue(); 
-        	if(codePrlv != null && codePrlv.split(".").length > 0){
-        		final String idEdmus = ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true))
-        							      .codeBoxPrlvt.getValue().split(".")[0];
-        		((FichePatientEditOFSEP) fichePatientDiv.getFellow("fwinPatientEditOFSEP").getAttributeOrFellow("fwinPatientEditOFSEP$composer", true))
-	        	   .getNomBox().setValue( idEdmus );
-	            ((FichePatientEditOFSEP) fichePatientDiv.getFellow("fwinPatientEditOFSEP").getAttributeOrFellow("fwinPatientEditOFSEP$composer", true))
-	               .getNipBox().setValue( idEdmus );
-	            ((FichePatientEditOFSEP) fichePatientDiv.getFellow("fwinPatientEditOFSEP").getAttributeOrFellow("fwinPatientEditOFSEP$composer", true))
-	               .getPrenomBox().setValue( idEdmus );
-	        }
-         }*/
+         if(OFSEP.equals(getCurrentContexte())){
+        	 
+        	final FichePrelevementEditOFSEP prlvEditOfsep = (FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true);
+        	if (prlvEditOfsep != null) {
+        	    String codePrlv = prlvEditOfsep.codeBoxPrlvt.getValue(); 
+        		if(codePrlv != null) {
+    	    	  String[] arrayCodePrvl = codePrlv.split("\\.");
+    	    	  if(arrayCodePrvl != null) {
+    	            String idEdmus = arrayCodePrvl[0];
+    	        	final FichePatientEditOFSEP patEditOfsep = (FichePatientEditOFSEP) fichePatientDiv.getFellow("fwinPatientEditOFSEP").getAttributeOrFellow("fwinPatientEditOFSEP$composer", true);
+      		        if(patEditOfsep != null) {
+      		          patEditOfsep.getNomBox().setValue( idEdmus );
+      		          patEditOfsep.getNipBox().setValue( idEdmus );
+      		          patEditOfsep.getPrenomBox().setValue( idEdmus );
+      		        }
+    	    	  }
+    	        }
+        	}
+         }
          
          // efface la grid existing patient
          displayExistingPatient(false);

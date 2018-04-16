@@ -556,7 +556,7 @@
 							<columns menupopup="auto" sizable="true" >
 								<column align="center" width="70px"/>
 								<column label="${c:l('general.code')}" />
-								<column label="${c:l('Entite.Banque')}" visible="@{fwinPrelevementStaticOFSEP$composer.ttesCollections}" />
+								<column label="${c:l('Entite.Banque')}" />
 								<column label="${c:l('Champ.Echantillon.DateStock')}" width="130px" />
 								<column label="${c:l('Champ.Echantillon.Organe')}" visible="false"/>
 								<column label="${c:l('Champ.Echantillon.CodeLes')}" visible="false"/>

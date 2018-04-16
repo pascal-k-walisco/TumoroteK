@@ -15,6 +15,7 @@ import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
+import org.zkoss.zul.Div;
 
 import fr.aphp.tumorotek.action.ManagerLocator;
 import fr.aphp.tumorotek.action.annotation.FicheAnnotation;
@@ -50,6 +51,10 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
       if(prelevement.getConsentType() == null){
     	  this.selectedConsentType = consentTypes.get(2);
       }
+      
+//      if(resumePatient.getLinkPatientLabel().getValue() != null) {
+//    	  this.codeBoxPrlvt.setValue(resumePatient.getLinkPatientLabel().getValue());
+//      }
    }
    
    @Override
@@ -304,6 +309,9 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
     */
    @Override
    public void onBlur$codeBoxPrlvt(){
+	   
+	  String codePrlv = codeBoxPrlvt.getValue();
+	   
       codeBoxPrlvt.setValue(codeBoxPrlvt.getValue().toUpperCase().trim());
 
       // si le code a été modifié lors de l'update du prélèvement
@@ -311,12 +319,25 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
          getObjectTabController().setCodeUpdated(true);
          getObjectTabController().setOldCode(((Prelevement) getCopy()).getCode());
       }
-      
-      final String codePrlv = codeBoxPrlvt.getValue();
-      if(codePrlv != null && codePrlv.split(".").length > 0) {
-  	     ((FichePatientEditOFSEP) referenceur.getFellow("winRefPatient").getFellow("fwinPatientEditOFSEP").getAttributeOrFellow("fwinPatientEditOFSEP$composer", true))
-      	    .getNomBox().setValue(codePrlv.split(".")[0]);
-  	     ((ReferenceurPatient) referenceur.getAttributeOrFellow("winRefPatient$composer", true)).getNomNipNdaBox().setValue(codePrlv.split(".")[0]);
+	       
+      if(codePrlv != null) {
+    	  String[] arrayCodePrvl = codePrlv.split("\\.");
+    	  if(arrayCodePrvl != null) {
+        	  String idEdmus = arrayCodePrvl[0];
+        	  final ReferenceurPatient ref = (ReferenceurPatient) referenceur.getAttributeOrFellow("winRefPatient$composer", true);
+    	      if(ref != null) {
+    	    	  ref.getNomNipNdaBox().setValue(idEdmus);
+    	      }
+    	      
+    	      if (referenceur.getFellow("winRefPatient").getFellow("newPatientDiv").isVisible()) {
+    	    	  final FichePatientEditOFSEP patEditOfsep = (FichePatientEditOFSEP) referenceur.getFellow("winRefPatient").getFellow("newPatientDiv").getFellow("fichePatientDiv").getFellow("fwinPatientEditOFSEP").getAttributeOrFellow("fwinPatientEditOFSEP$composer", true);
+    	          if(patEditOfsep != null) {
+    	        	  patEditOfsep.getNomBox().setValue(idEdmus);
+    	        	  patEditOfsep.getNipBox().setValue( idEdmus );
+    	        	  patEditOfsep.getPrenomBox().setValue( idEdmus );
+    	          }
+    	      }
+    	  }
       }
    }
    

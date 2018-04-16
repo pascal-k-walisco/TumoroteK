@@ -114,7 +114,7 @@
 					</row>
 					<row>
 					<!-- Nom -->
-						<label value="${c:l('Champ.Patient.Nom')}" sclass="formLabel" />
+						<label value="${c:l('Champ.Patient.IdEdmus')}" sclass="formLabel" />
 						<label id="linkPatientLabel" sclass="formLink" />
 					<!-- Prenom -->
 						<label value="${c:l('Champ.Patient.Prenom')}" sclass="formLabel" visible="false"/>

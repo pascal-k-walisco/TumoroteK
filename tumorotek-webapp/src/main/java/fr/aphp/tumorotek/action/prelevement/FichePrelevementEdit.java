@@ -242,7 +242,12 @@ public class FichePrelevementEdit extends AbstractFicheEditController
          resumePatient.setNdaBoxVisible(true);
 
          ndaBox = resumePatient.getNdaBox();
-
+         
+         codeBoxPrlvt.setValue(resumePatient.getLinkPatientLabel().getValue());
+//       if(resumePatient.getLinkPatientLabel().getValue() != null) {
+//   	  this.codeBoxPrlvt.setValue(resumePatient.getLinkPatientLabel().getValue());
+//     }
+         
          // prepare la liste de risques
          if(getParentObject() != null){
             selectRisques(ManagerLocator.getRisqueManager().findByPatientAndPlateformeManager((Patient) getParentObject(),

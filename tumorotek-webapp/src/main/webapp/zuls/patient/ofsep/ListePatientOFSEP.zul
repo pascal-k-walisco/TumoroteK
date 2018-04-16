@@ -62,7 +62,7 @@
 					width="200px"/>
 				<column label="${c:l('patient.nbPrelevements')}" 
 					sort="auto" id="nbPrelevementsColumn" />
-				<column label="${c:l('Champ.Echantillon.Organe')}"/>
+				<column label="${c:l('Champ.Echantillon.Organe')}" visible="false"/>
 			</columns>
 			<rows>
 				<row self="@{each='currPatient'}" value="currPatient"/>

@@ -12,6 +12,6 @@ public class ListePatientOFSEP extends ListePatient
    public void doAfterCompose(final Component comp) throws Exception{
       super.doAfterCompose(comp);
 
-      //addNew.setVisible(false);
+      addNew.setVisible(false);
    }
 }
