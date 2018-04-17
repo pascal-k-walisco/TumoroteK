@@ -175,9 +175,20 @@ BEGIN
 --      PATIENT_NDA varchar(20),
 --      DIAGNOSTIC	varchar(500),
 --		CODE_ORGANE VARCHAR(500),
-        ECHAN_TOTAL int(4),
-        ECHAN_RESTANT int(4),
-        ECHAN_STOCKE int(4),
+--        ECHAN_TOTAL int(4),
+--        ECHAN_RESTANT int(4),
+--        ECHAN_STOCKE int(4),
+		ECHANTILLON_ID int(10),
+	    NUM_EC varchar(50),
+	    TYPE_EC varchar(200),
+	    QUANTITE_INIT_EC decimal(12,3),
+	    QUANTITE_INIT_UNITE_EC varchar(30),
+	    MODE_PREPA_EC varchar(200),
+	    STERILE_EC tinyint(1),
+	    DATE_HEURE_STOCK_EC datetime,
+	    DELAI_CGL_EC decimal(9,2),
+	    CONF_APRES_TTMT_EC tinyint(1),
+	    CONF_CESSION_EC tinyint(1),
         AGE_PREL int(4),
 		NOMBRE_DERIVES int(4),
 		DATE_HEURE_SAISIE datetime,
@@ -188,8 +199,9 @@ BEGIN
 		DATE_DIAGNOSTIC date,
 		DATE_DEBUT date ,
 		MEDECIN_MALADIE varchar(300),
+		
         PATIENT_ID int (10),
-		PRIMARY KEY (PRELEVEMENT_ID),
+		PRIMARY KEY (PRELEVEMENT_ID, ECHANTILLON_ID),
 		INDEX (PATIENT_ID),
 		INDEX (MALADIE_ID)
 	)ENGINE=MYISAM, default character SET = utf8;
@@ -202,7 +214,8 @@ DROP PROCEDURE IF EXISTS `fill_tmp_table_prel_ofsep`;
 
 CREATE PROCEDURE `fill_tmp_table_prel_ofsep`(IN id INTEGER)
 BEGIN 
-	INSERT INTO TMP_PRELEVEMENT_EXPORT (PRELEVEMENT_ID ,
+	INSERT INTO TMP_PRELEVEMENT_EXPORT (
+		PRELEVEMENT_ID ,
 		BANQUE ,
 		CODE  ,
 --	    NUMERO_LABO ,
@@ -233,9 +246,22 @@ BEGIN
 --	    PATIENT_NDA ,
 --	    CODE_ORGANE,
 --	    DIAGNOSTIC,
+/*
 	    ECHAN_TOTAL,
 	    ECHAN_RESTANT,
 	    ECHAN_STOCKE,
+*/
+	    ECHANTILLON_ID,
+	    NUM_EC,
+	    TYPE_EC,
+	    QUANTITE_INIT_EC,
+	    QUANTITE_INIT_UNITE_EC,
+	    MODE_PREPA_EC,
+	    STERILE_EC,
+	    DATE_HEURE_STOCK_EC,
+	    DELAI_CGL_EC,
+	    CONF_APRES_TTMT_EC,
+	    CONF_CESSION_EC,    
 	    AGE_PREL,
 	    NOMBRE_DERIVES,
 		DATE_HEURE_SAISIE,
@@ -305,6 +331,7 @@ BEGIN
 --			WHERE ca.IS_MORPHO=1 
 --			AND e.prelevement_id = id
 --		),
+/*
 		(
 			SELECT count(e.prelevement_id) 
 			FROM ECHANTILLON e 
@@ -323,6 +350,18 @@ BEGIN
 			AND (os.statut = 'STOCKE' OR os.statut = 'RESERVE') 
 			WHERE e2.prelevement_id = p.prelevement_id
 		) as 'Echantillons_stockés',
+*/
+		ec.echantillon_id as 'Enchantillon ID',
+		ec.code as 'N° échantillon',
+		ect.type as 'Type échantillon',
+		ec.quantite_init as 'Quantité initiale échantillon',
+		eciu.unite as 'Unité quantité initiale échantillon',
+		ecmp.nom as 'Mode de préparation échantillong',
+		ec.sterile as 'Stérile échantillon',
+		ec.date_stock as 'Date stockage échantillon',
+		ec.delai_cgl as 'Délai de congélation échantillon',
+		ec.conforme_traitement as 'Echantillon conforme apèrs traitement',
+		ec.conforme_cession as 'Enchantillon conforme à la cession',
 		(
 			select FLOOR(datediff(p.date_prelevement, pat.DATE_NAISSANCE)/365.25)
 		) as 'AGE_AU_PREL',
@@ -359,7 +398,11 @@ BEGIN
 		INNER JOIN BANQUE b 
 		INNER JOIN NATURE n 
 		INNER JOIN ENTITE ent 
-		LEFT JOIN PRELEVEMENT_TYPE pt ON p.prelevement_type_id = pt.prelevement_type_id 
+		INNER JOIN ECHANTILLON ec ON ec.prelevement_id = p.prelevement_id
+		LEFT JOIN ECHANTILLON_TYPE ect ON ec.echantillon_type_id = ect.echantillon_type_id
+		LEFT JOIN UNITE eciu ON ec.quantite_unite_id = eciu.unite_id
+		LEFT JOIN MODE_PREPA ecmp ON ec.mode_prepa_id = ecmp.mode_prepa_id
+		LEFT JOIN PRELEVEMENT_TYPE pt ON p.prelevement_type_id = pt.prelevement_type_id
 		-- LEFT JOIN OBJET_NON_CONFORME onc ON p.prelevement_id = onc.objet_id 
 		-- LEFT JOIN NON_CONFORMITE nc ON onc.non_conformite_id = nc.non_conformite_id 
 		LEFT JOIN SERVICE s ON p.service_preleveur_id = s.service_id LEFT JOIN ETABLISSEMENT et ON s.etablissement_id = et.etablissement_id
