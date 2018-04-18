@@ -137,11 +137,11 @@ public class EchantillonRowRenderer extends TKSelectObjectRenderer
       codeLabel.setParent(row);
       log.debug("code");
 
-      if(isTtesCollections()){
+//	  if(isTtesCollections()){
          new Label(echan.getBanque().getNom()).setParent(row);
-      }else{
-         new Label().setParent(row);
-      }
+//      }else{
+//         new Label().setParent(row);
+//      }
 
       // patient
       if(!isEmbedded){

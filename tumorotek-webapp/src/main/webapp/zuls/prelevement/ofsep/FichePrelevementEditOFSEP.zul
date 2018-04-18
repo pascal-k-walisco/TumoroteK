@@ -116,26 +116,26 @@
 					<!-- Nom -->
 						<label value="${c:l('Champ.Patient.IdEdmus')}" sclass="formLabel" />
 						<label id="linkPatientLabel" sclass="formLink" />
-					<!-- Prenom -->
-						<label value="${c:l('Champ.Patient.Prenom')}" sclass="formLabel" visible="false"/>
-						<label id="prenomLabel" sclass="formValue" visible="false"/>
-					</row>
-					<row>
-					<!-- Date de naissance -->
-						<box orient="horizontal" widths=",50%" pack="center" >
-							<label value="${c:l('Champ.Patient.DateNaissance')}" sclass="formLabel" />
-							<image src="/images/icones/codif-export.png" visible="${sessionScope.catalogues['INCa'] != null}" 
-								tooltip="inca3" style="cursor: pointer" />
-						</box>
-						<label id="dateNaisLabel" sclass="formValue" />
 					<!-- Sexe -->
 						<box orient="horizontal" widths=",50%" pack="center" >
 							<label value="${c:l('Champ.Patient.Sexe')}" sclass="formLabel" />
 							<image src="/images/icones/codif-export.png" visible="${sessionScope.catalogues['INCa'] != null}" 
 										tooltip="inca4" style="cursor: pointer" />
-							</box>
+						</box>
 						<label id="sexeLabel" sclass="formValue" />
-					</row>					
+					</row>
+					<row>
+					<!-- Date de naissance -->
+						<box orient="horizontal" widths=",50%" pack="center" >
+							<label value="${c:l('Champ.Patient.AnneeNaissance')}" sclass="formLabel" />
+							<image src="/images/icones/codif-export.png" visible="${sessionScope.catalogues['INCa'] != null}" 
+								tooltip="inca3" style="cursor: pointer" />
+						</box>
+						<label id="dateNaisLabel" sclass="formValue"/>
+					<!-- Prenom -->
+						<label value="${c:l('Champ.Patient.Prenom')}" sclass="formLabel" visible="false"/>
+						<label id="prenomLabel" sclass="formValue" visible="false"/>
+					</row>				
 					<!-- Maladie -->
 					<row spans="4" id="linkMaladie" style="border-top-style: solid; 
 															border-top-color: #6ca1e6; 

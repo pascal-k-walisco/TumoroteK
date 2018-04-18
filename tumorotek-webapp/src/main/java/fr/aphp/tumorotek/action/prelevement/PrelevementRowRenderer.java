@@ -35,6 +35,9 @@
  **/
 package fr.aphp.tumorotek.action.prelevement;
 
+import static fr.aphp.tumorotek.model.contexte.EContexte.OFSEP;
+import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -174,12 +177,24 @@ public class PrelevementRowRenderer extends TKSelectObjectRenderer
             // nip @version 2.0.12
             createAnonymeBlock().setParent(row);
          }else{
-            final Label patientLabel = new Label(PrelevementUtils.getPatientNomAndPrenom(prel));
-            if(getAccessPatient()){
-               patientLabel.addForward(null, patientLabel.getParent(), "onClickPatient", prel);
-               patientLabel.setClass("formLink");
-            }
-            patientLabel.setParent(row);
+        	 
+        	// Pour le contexte OFSEP récupération uniquement du 'nom' (id edmus)
+        	if(OFSEP.equals(getCurrentContexte())){
+        		final Label patientLabel = new Label(prel.getMaladie().getPatient().getNom());
+            	if(getAccessPatient()){
+                   patientLabel.addForward(null, patientLabel.getParent(), "onClickPatient", prel);
+                   patientLabel.setClass("formLink");
+                }
+                patientLabel.setParent(row);
+         	}else {
+         		final Label patientLabel = new Label(PrelevementUtils.getPatientNomAndPrenom(prel));
+            	if(getAccessPatient()){
+                   patientLabel.addForward(null, patientLabel.getParent(), "onClickPatient", prel);
+                   patientLabel.setClass("formLink");
+                }
+                patientLabel.setParent(row);
+         	}
+        	
             // nip @version 2.0.12
             final Label nipLabel = new Label(prel.getMaladie().getPatient().getNip());
             nipLabel.setParent(row);

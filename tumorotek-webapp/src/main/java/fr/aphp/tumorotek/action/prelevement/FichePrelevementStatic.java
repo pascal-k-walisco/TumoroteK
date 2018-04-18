@@ -35,8 +35,12 @@
  **/
 package fr.aphp.tumorotek.action.prelevement;
 
+import static fr.aphp.tumorotek.model.contexte.EContexte.OFSEP;
+import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -156,6 +160,8 @@ public class FichePrelevementStatic extends AbstractFicheStaticController
    protected boolean canAccessEchantillons = true;
    protected boolean canAccessDerives = true;
 
+   protected Label dateNaisLabel;
+   
    @Override
    public void doAfterCompose(final Component comp) throws Exception{
       super.doAfterCompose(comp);
@@ -256,6 +262,11 @@ public class FichePrelevementStatic extends AbstractFicheStaticController
          resumePatient.setPrelevement(prelevement);
          resumePatient.setPatientAccessible(isPatientAccessible);
          resumePatient.hideMaladieRows(SessionUtils.isAnyDefMaladieInBanques(SessionUtils.getSelectedBanques(sessionScope)));
+         if(OFSEP.equals(getCurrentContexte())) {
+        	 Calendar c = Calendar.getInstance();
+   			 c.setTime(maladie.getPatient().getDateNaissance());
+   			 dateNaisLabel.setValue(String.valueOf(c.get(Calendar.YEAR)));
+         }
       }else if(this.prelevement.getPrelevementId() != null){
          resumePatient.setVisible(false);
       }

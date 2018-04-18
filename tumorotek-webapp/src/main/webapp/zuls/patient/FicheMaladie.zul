@@ -164,15 +164,16 @@
 									<listheader width="50px" />
 									<listheader label="${c:l('prelevement.datePrelevementCourt')}"
 									width="100px"/>
-									<listheader label="${c:l('general.code')}" width="100px" />
+									<listheader id="listPrvlCode" label="${c:l('general.code')}" width="100px" />
+									<listheader label="${c:l('Entite.Banque')}" />
 									<listheader label="${c:l('Champ.Prelevement.Nature')}"
 									width="100px"/>
 									<listheader label="${c:l('general.type')}" width="100px"/>
-									<listheader label="${c:l('Champ.Echantillon.Organe')}"
+									<listheader id="listPrvlOrgane" label="${c:l('Champ.Echantillon.Organe')}"
 									width="100px"/>
-									<listheader label="${c:l('general.diagnostic')}"
+									<listheader id="listPrvlDiagnostic" label="${c:l('general.diagnostic')}"
 									width="100px"/>
-									<listheader label="${c:l('Champ.Prelevement.ConsentType')}"
+									<listheader id="listPrvlConsentType" label="${c:l('Champ.Prelevement.ConsentType')}"
 									width="100px"/>
 									<listheader width="100px">
 										<vbox align="center" hflex="1">

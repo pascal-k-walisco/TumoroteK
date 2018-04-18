@@ -84,21 +84,26 @@
                             </listitem>
                         </listbox>
                     </row>
+                    
                     <row>
-                        <!-- Date de naissance -->
+                    	 <!-- Date de naissance -->
                         <hbox>
                             <box orient="horizontal" pack="center">
-                                <label value="${c:l('Champ.Patient.DateNaissance')}" sclass="incaLabel"/>
+                                <label value="${c:l('Champ.Patient.AnneeNaissance')}" sclass="incaLabel"/>
                                 <image src="/images/icones/codif-export.png"
                                        visible="${sessionScope.catalogues['INCa'] != null}"
                                        tooltip="inca3" style="cursor: pointer"/>
                             </box>
                             <label id="dateNaissanceRequired" value="*" sclass="requiredMark"/>
                         </hbox>
+                        <intbox id="dateNaisYearBox"
+                                 width="100px"
+                                 constraint="no empty"
+                        />
                         <datebox id="dateNaisBox" format="${c:l('validation.date.format.simple')}"
                                  value="@{fwinPatientEditOFSEP$composer.object.dateNaissance,
 							save-when='validate.onClick, create.onClick'}"
-                                 constraint="no empty" lenient="false"/>
+                                 constraint="no empty" lenient="false" visible="false"/>
                     </row>
 
                     <row visible="false">

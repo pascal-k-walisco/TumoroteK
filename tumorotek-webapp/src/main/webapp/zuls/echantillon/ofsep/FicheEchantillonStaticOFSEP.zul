@@ -98,10 +98,8 @@
 					</row>
 					<row id="row3PrlvtEchan" spans="1,3">
 						<!-- Patient -->
-						<!-- <label value="${c:l('prelevement.patient')}" sclass="formLabel" />
-						<label id="patientLabel" sclass="formValue" /> -->
 						<label value="${c:l('Champ.Patient.IdEdmus')}" sclass="formLabel" />
-						<label id="linkPatientLabel" sclass="formLink" />
+						<label id="patientLabel" sclass="formValue" />
 					</row>
 					<row spans="4">
 						<separator/>

@@ -55,19 +55,22 @@
 						sort="auto(code)" />
 					<column label="${c:l('Entite.Banque')}" 
 						visible="@{lwinPrelevementOFSEP$composer.isTtesCollection}" />
-					<column label="${c:l('prelevement.patient')}"
-						sort="auto(maladie.patient.nom)" visible="false"/>
-					<column label="${c:l('Champ.Patient.IdEdmus')}" />
+					<column label="${c:l('Champ.Patient.IdEdmus')}"
+						sort="auto(maladie.patient.nom)" />
+					<column label="${c:l('Champ.Patient.Nip')}" visible="false"/>
 					<column label="${c:l('prelevement.maladie')}"
 						visible="@{lwinPrelevementOFSEP$composer.banqueDefMaladies}"
 						width="150px" />
 					<column
 						label="${c:l('prelevement.datePrelevementCourt')}"
 						sort="auto(datePrelevement)" />
+					<column 
+						label="${c:l('Champ.Prelevement.DatePeremption')}" 
+						visible="false" />	
 					<column
 						label="${c:l('Champ.Prelevement.Nature.Nature')}"
 						sort="auto(nature.nature)" />
-					<column label="${c:l('general.diagnostic')}" />
+					<column label="${c:l('general.diagnostic')}" visible="false"/>
 					<column align="center" sort="auto"
 						id="nbEchantillonsColumn">
 						<vbox align="center">

@@ -215,7 +215,7 @@
 							</box>
 							<label id="requiredDateConEchan" value="*" sclass="requiredMark" />
 						</hbox>
-						<div>
+						<div width="155px" id="delaiCglBox">
 							<intbox id="heureBox" 
 								width="50px"
 								value="@{fwinEchantillonEditOFSEP$composer.heureDelai,  

@@ -67,11 +67,11 @@
 					<row>
 						<!-- Date de naissance -->
 						<box orient="horizontal"  >
-							<label value="${c:l('Champ.Patient.DateNaissance')}" sclass="formLabel" />
+							<label value="${c:l('Champ.Patient.AnneeNaissance')}" sclass="formLabel" />
 							<image src="/images/icones/codif-export.png" visible="${sessionScope.catalogues['INCa'] != null}" 
 								tooltip="inca3" style="cursor: pointer" />
 						</box>
-						<label id="dateNaisLabel"  value="@{fwinPatientStaticOFSEP$composer.dateNaisFormatted}" sclass="formValue" />
+						<label id="dateNaisLabel"  value="@{fwinPatientStaticOFSEP$composer.dateNaisFormatted}" sclass="formValue"/>
 					</row>	
 					
 					<row visible="false">

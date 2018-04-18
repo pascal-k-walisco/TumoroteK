@@ -2,32 +2,23 @@ package fr.aphp.tumorotek.action.prelevement.ofsep;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
 import org.zkoss.util.resource.Labels;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.WrongValueException;
-import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.Clients;
-import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Label;
 import org.zkoss.zul.Textbox;
-import org.zkoss.zul.Window;
-import org.zkoss.zul.Div;
 
 import fr.aphp.tumorotek.action.ManagerLocator;
-import fr.aphp.tumorotek.action.annotation.FicheAnnotation;
 import fr.aphp.tumorotek.action.patient.FicheMaladie;
 import fr.aphp.tumorotek.action.patient.FichePatientEdit;
 import fr.aphp.tumorotek.action.patient.ofsep.FichePatientEditOFSEP;
 import fr.aphp.tumorotek.action.prelevement.FichePrelevementEdit;
 import fr.aphp.tumorotek.action.prelevement.ReferenceurPatient;
-import fr.aphp.tumorotek.component.CalendarBox;
-import fr.aphp.tumorotek.manager.exception.DoublonFoundException;
-import fr.aphp.tumorotek.model.TKAnnotableObject;
-import fr.aphp.tumorotek.model.TKdataObject;
 import fr.aphp.tumorotek.model.coeur.prelevement.LaboInter;
 import fr.aphp.tumorotek.model.coeur.prelevement.Prelevement;
 import fr.aphp.tumorotek.model.contexte.Collaborateur;
@@ -43,6 +34,8 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
    private static final long serialVersionUID = 1L;
 
    // protected CalendarBox datePeremptionCalBox;
+   protected Label anneeNaisLabel;
+   protected Label dateNaisLabel;
 
    @Override
    public void doAfterCompose(final Component comp) throws Exception{
@@ -51,19 +44,39 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
       if(prelevement.getConsentType() == null){
     	  this.selectedConsentType = consentTypes.get(2);
       }
-      
-//      if(resumePatient.getLinkPatientLabel().getValue() != null) {
-//    	  this.codeBoxPrlvt.setValue(resumePatient.getLinkPatientLabel().getValue());
-//      }
+   }
+   
+   @Override
+   public void switchToCreateMode(){
+      super.switchToCreateMode();
+
+      if(getMaladie() != null){
+         resumePatient.setNdaBoxVisible(false);
+         
+         Calendar c = Calendar.getInstance();
+		 c.setTime(getMaladie().getPatient().getDateNaissance());
+		 dateNaisLabel.setValue(String.valueOf(c.get(Calendar.YEAR)));
+		 
+         codeBoxPrlvt.setValue(resumePatient.getLinkPatientLabel().getValue());
+      }
+   }
+   
+   @Override
+   public void switchToEditMode(){
+      super.switchToEditMode();
+
+      if(getMaladie() != null){
+         resumePatient.setNdaBoxVisible(false);
+         
+         Calendar c = Calendar.getInstance();
+		 c.setTime(getMaladie().getPatient().getDateNaissance());
+		 dateNaisLabel.setValue(String.valueOf(c.get(Calendar.YEAR)));
+      }
    }
    
    @Override
    public void onClick$create(){
 
-      if(selectedNature == null){
-         Clients.scrollIntoView(naturesBoxPrlvt);
-         throw new WrongValueException(naturesBoxPrlvt, Labels.getLabel("fichePrelevement.error.nature"));
-      }
       if(selectedMode == null){
          Clients.scrollIntoView(modesBoxPrlvt);
          throw new WrongValueException(modesBoxPrlvt, Labels.getLabel("fichePrelevement.error.mode"));
@@ -72,29 +85,13 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
          Clients.scrollIntoView(etabsBoxPrlvt);
          throw new WrongValueException(etabsBoxPrlvt, Labels.getLabel("fichePrelevement.error.etabs"));
       }
-      /*if(selectedConsentType == null){
-         Clients.scrollIntoView(consentTypesBoxPrlvt);
-         throw new WrongValueException(consentTypesBoxPrlvt, Labels.getLabel("fichePrelevement.error.consenType"));
-      }*/
-
-      // valide les dates donc
-      validateAllDateComps();
-
-      // récupere les objets à partir des formulaires embarqués
-      setEmbeddedObjects();
-
-      if(warnNoPatient()){ // warning si pas patient
-         super.onClick$create();
-      }
+      
+      super.onClick$create();
    }
-
+   
    @Override
    public void onClick$validate(){
 
-      if(selectedNature == null){
-         Clients.scrollIntoView(naturesBoxPrlvt);
-         throw new WrongValueException(naturesBoxPrlvt, Labels.getLabel("fichePrelevement.error.nature"));
-      }
       if(selectedMode == null){
          Clients.scrollIntoView(modesBoxPrlvt);
          throw new WrongValueException(modesBoxPrlvt, Labels.getLabel("fichePrelevement.error.mode"));
@@ -103,13 +100,6 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
          Clients.scrollIntoView(etabsBoxPrlvt);
          throw new WrongValueException(etabsBoxPrlvt, Labels.getLabel("fichePrelevement.error.etabs"));
       }
-      /*if(selectedConsentType == null){
-         Clients.scrollIntoView(consentTypesBoxPrlvt);
-         throw new WrongValueException(consentTypesBoxPrlvt, Labels.getLabel("fichePrelevement.error.consenType"));
-      }*/
-
-      // valide les dates donc
-      validateAllDateComps();
 
       super.onClick$validate();
    }
@@ -229,11 +219,6 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
    @Override
    public void onClick$next(){
       // validation des champs obligatoires
-      if(selectedNature == null){
-         Clients.scrollIntoView(naturesBoxPrlvt);
-         throw new WrongValueException(naturesBoxPrlvt, Labels.getLabel("fichePrelevement.error.nature"));
-      }
-      Clients.clearWrongValue(naturesBoxPrlvt);
       if(selectedMode == null){
          Clients.scrollIntoView(modesBoxPrlvt);
          throw new WrongValueException(modesBoxPrlvt, Labels.getLabel("fichePrelevement.error.mode"));
@@ -244,63 +229,8 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
          throw new WrongValueException(etabsBoxPrlvt, Labels.getLabel("fichePrelevement.error.etabs"));
       }
       Clients.clearWrongValue(etabsBoxPrlvt);
-      /*if(selectedConsentType == null){
-         Clients.scrollIntoView(consentTypesBoxPrlvt);
-         throw new WrongValueException(consentTypesBoxPrlvt, Labels.getLabel("fichePrelevement.error.consenType"));
-      }
-      Clients.clearWrongValue(consentTypesBoxPrlvt);*/
-
-      // valide les dates donc
-      validateAllDateComps();
-
-      // récupere les objets à partir des formulaires embarqués
-      setEmbeddedObjects();
-
-      if(warnNoPatient()){ // warning si pas patient
-
-         // on remplit le prlvt en fonction des champs nulls
-         setEmptyToNulls();
-
-         // on recopie les sélections dans le prlvt
-         if(this.prelevement.getBanque() == null){
-            this.prelevement.setBanque(SessionUtils.getSelectedBanques(sessionScope).get(0));
-         }
-         this.prelevement.setNature(selectedNature);
-         this.prelevement.setConsentType(selectedConsentType);
-         this.prelevement.setPreleveur(selectedCollaborateur);
-         this.prelevement.setServicePreleveur(selectedService);
-         this.prelevement.setPrelevementType(selectedMode);
-         this.prelevement.setConditType(selectedConditType);
-         this.prelevement.setConditMilieu(selectedConditMilieu);
-         getObject().setRisques(findSelectedRisques());
-
-         this.prelevement.setMaladie(this.maladie);
-
-         // on vérifie que le prélèvement n'a pas de doublons
-         if(!ManagerLocator.getPrelevementManager().findDoublonManager(prelevement)){
-
-            Clients.showBusy(Labels.getLabel("general.wait"));
-            Events.echoEvent("onLaterNextStep", self, null);
-
-         }else{
-            try{
-               throw new DoublonFoundException("Prelevement", "creation", prelevement.getCode(), null);
-            }catch(final DoublonFoundException re){
-               Clients.clearBusy();
-
-               final HashMap<String, Object> map = new HashMap<>();
-               map.put("title", Labels.getLabel("error.unhandled"));
-               map.put("message", handleExceptionMessage(re));
-               map.put("exception", re);
-
-               final Window window =
-                  (Window) Executions.createComponents("/zuls/component/DynamicMultiLineMessageBox.zul", null, map);
-               window.doModal();
-            }catch(final RuntimeException re){
-               Messagebox.show(handleExceptionMessage(re), "Error", Messagebox.OK, Messagebox.ERROR);
-            }
-         }
-      }
+      
+      super.onClick$next();
    }
    
    /**
@@ -310,8 +240,6 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
    @Override
    public void onBlur$codeBoxPrlvt(){
 	   
-	  String codePrlv = codeBoxPrlvt.getValue();
-	   
       codeBoxPrlvt.setValue(codeBoxPrlvt.getValue().toUpperCase().trim());
 
       // si le code a été modifié lors de l'update du prélèvement
@@ -319,25 +247,29 @@ public class FichePrelevementEditOFSEP extends FichePrelevementEdit
          getObjectTabController().setCodeUpdated(true);
          getObjectTabController().setOldCode(((Prelevement) getCopy()).getCode());
       }
-	       
-      if(codePrlv != null) {
-    	  String[] arrayCodePrvl = codePrlv.split("\\.");
-    	  if(arrayCodePrvl != null) {
-        	  String idEdmus = arrayCodePrvl[0];
-        	  final ReferenceurPatient ref = (ReferenceurPatient) referenceur.getAttributeOrFellow("winRefPatient$composer", true);
-    	      if(ref != null) {
-    	    	  ref.getNomNipNdaBox().setValue(idEdmus);
-    	      }
-    	      
-    	      if (referenceur.getFellow("winRefPatient").getFellow("newPatientDiv").isVisible()) {
-    	    	  final FichePatientEditOFSEP patEditOfsep = (FichePatientEditOFSEP) referenceur.getFellow("winRefPatient").getFellow("newPatientDiv").getFellow("fichePatientDiv").getFellow("fwinPatientEditOFSEP").getAttributeOrFellow("fwinPatientEditOFSEP$composer", true);
-    	          if(patEditOfsep != null) {
-    	        	  patEditOfsep.getNomBox().setValue(idEdmus);
-    	        	  patEditOfsep.getNipBox().setValue( idEdmus );
-    	        	  patEditOfsep.getPrenomBox().setValue( idEdmus );
-    	          }
-    	      }
-    	  }
+	  
+      if(getMaladie() == null && codeBoxPrlvt.isValid()) {
+    	  String codePrlv = codeBoxPrlvt.getValue();
+	      if(codePrlv != null && codePrlv.split("\\.") != null && codePrlv.split("\\.").length > 0) {
+	    	  String[] arrayCodePrvl = codePrlv.split("\\.");
+	    	  if(arrayCodePrvl != null) {
+	        	  String idEdmus = arrayCodePrvl[0];
+	        	  
+	        	  final ReferenceurPatient ref = (ReferenceurPatient) referenceur.getAttributeOrFellow("winRefPatient$composer", true);
+	    	      if(ref != null) {
+	    	    	  ref.getNomNipNdaBox().setValue(idEdmus);
+	    	      }
+	    	      
+	    	      if (referenceur.getFellow("winRefPatient").getFellow("newPatientDiv").isVisible()) {
+	    	    	  final FichePatientEditOFSEP patEditOfsep = (FichePatientEditOFSEP) referenceur.getFellow("winRefPatient").getFellow("newPatientDiv").getFellow("fichePatientDiv").getFellow("fwinPatientEditOFSEP").getAttributeOrFellow("fwinPatientEditOFSEP$composer", true);
+	    	          if(patEditOfsep != null) {
+	    	        	  patEditOfsep.getNomBox().setValue(idEdmus);
+	    	        	  patEditOfsep.getNipBox().setValue( idEdmus );
+	    	        	  patEditOfsep.getPrenomBox().setValue( idEdmus );
+	    	          }
+	    	      }
+	    	  }
+	      }
       }
    }
    

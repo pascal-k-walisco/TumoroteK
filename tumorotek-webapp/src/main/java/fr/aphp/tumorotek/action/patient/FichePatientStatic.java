@@ -89,7 +89,7 @@ public class FichePatientStatic extends AbstractFicheStaticController
    private Group referentsGroup;
 
    // Objets Principaux
-   private Patient patient;
+   protected Patient patient;
 
    // dateEtatDeces
    private Label dateEtatDecesField;

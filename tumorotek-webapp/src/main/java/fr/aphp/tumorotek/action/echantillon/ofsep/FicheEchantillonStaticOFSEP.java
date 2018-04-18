@@ -3,6 +3,7 @@ package fr.aphp.tumorotek.action.echantillon.ofsep;
 import org.zkoss.util.resource.Labels;
 
 import fr.aphp.tumorotek.action.echantillon.FicheEchantillonStatic;
+import fr.aphp.tumorotek.action.utils.PrelevementUtils;
 import fr.aphp.tumorotek.decorator.ObjectTypesFormatters;
 
 public class FicheEchantillonStaticOFSEP extends FicheEchantillonStatic
@@ -36,5 +37,14 @@ public class FicheEchantillonStaticOFSEP extends FicheEchantillonStatic
       }else{
          delaiLabel = Labels.getLabel("ficheEchantillon.delaiCgl.inconnu");
       }
+   }
+   
+   //Retroune uniquement le 'nom' du patient (id edmus)
+   @Override
+   public String getNomPatient(){
+      if(getPrelevement() != null){
+         return getPrelevement().getMaladie().getPatient().getNom();
+      }
+      return "";
    }
 }

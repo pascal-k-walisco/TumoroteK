@@ -53,7 +53,7 @@
 							sclass="formLabel"/>
 						
 						<label id="codeLabelPrlvt" 
-							value="@{fwinLaboInter$composer.object.code}"
+							value="@{fwinLaboInterOFSEP$composer.object.code}"
 							sclass="formValue"
 						/>
 						
@@ -61,7 +61,7 @@
 							sclass="formLabel"/>
 							
 						<label id="typeLabelPrlvt" 
-							value="@{fwinLaboInter$composer.object.nature.nature}"
+							value="@{fwinLaboInterOFSEP$composer.object.nature.nature}"
 							sclass="formValue"
 						/>
 					</row>
@@ -349,8 +349,10 @@
 					</row>
 					<row spans="1,3">						
 						<!-- Date d'arrivée -->
-						<label value="${c:l('Champ.Prelevement.DateArrivee')}" sclass="formLabel"/>
-						
+						<hbox>
+							<label value="${c:l('Champ.Prelevement.DateArrivee')}" sclass="formLabel"/>
+							<label value="*" sclass="requiredMark"/>
+						</hbox>
 						<calendarbox id="dateArriveeCalBox" value="@{fwinLaboInterOFSEP$composer.object.dateArrivee,
 			        			save-when='validate.onClick, create.onClick, next.onClick, self.onBlur'}" />
 					</row>
@@ -385,7 +387,7 @@
 							/>
 							
 							<listbox id="quantiteUnitesBoxLabo" mold="select" rows="1"
-								model="@{fwinLaboInter$composer.quantiteUnites}"
+								model="@{fwinLaboInterOFSEP$composer.quantiteUnites}"
 								selectedItem="@{fwinLaboInterOFSEP$composer.selectedQuantiteUnite}">
 								<listitem self="@{each='quantiteUniteLabo'}" value="@{quantiteUniteLabo}">			
 									<listcell label="@{quantiteUniteLabo.unite}" />
@@ -405,7 +407,10 @@
 					</row>
 					<row spans="1,3">
 						<!-- Conforme à l'arrivée -->
-						<label id="conformeArriveeLabel" value="${c:l('Champ.Prelevement.ConformeArrivee')}" sclass="formLabel" />
+						<box orient="horizontal" widths=",50%" pack="center" >
+							<label id="conformeArriveeLabel" value="${c:l('Champ.Prelevement.ConformeArrivee')}" sclass="formLabel" />
+							<label value="*" sclass="requiredMark"/>
+						</box>
 						<hlayout sclass="z-valign-middle">
 							<checkbox id="conformeArriveeBoxOui"/>
 							<label value="${c:l('general.checkbox.true')}" sclass="formLabel"/>
@@ -415,7 +420,7 @@
 								<space width="10px"/>
 								<listbox id="nonConformitesBox" mold="select" multiple="true" rows="3" 
 									model="@{fwinLaboInterOFSEP$composer.nonConformites}"
-									selectedItems="@{fwinLaboInter$composer.selectedNonConformitesItem}"
+									selectedItems="@{fwinLaboInterOFSEP$composer.selectedNonConformitesItem}"
 									>
 									<listitem self="@{each='nonConformiteSel'}" value="nonConformiteSel">
 										<listcell label="@{nonConformiteSel.nom}"/>

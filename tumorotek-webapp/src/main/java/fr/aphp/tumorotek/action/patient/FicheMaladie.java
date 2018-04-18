@@ -35,6 +35,9 @@
  **/
 package fr.aphp.tumorotek.action.patient;
 
+import static fr.aphp.tumorotek.model.contexte.EContexte.OFSEP;
+import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,6 +63,7 @@ import org.zkoss.zul.Group;
 import org.zkoss.zul.Image;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Listheader;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Panel;
@@ -171,6 +175,11 @@ public class FicheMaladie extends AbstractFicheCombineController
 
    protected PrelevementItemRenderer prelevementFromOtherBanksRenderer = new PrelevementItemRenderer();
 
+   //private Listheader listPrvlCode;
+   private Listheader listPrvlOrgane;
+   private Listheader listPrvlDiagnostic;
+   private Listheader listPrvlConsentType;
+   
    public Panel getContainer(){
       return container;
    }
@@ -262,6 +271,13 @@ public class FicheMaladie extends AbstractFicheCombineController
             onClickPrelevementCode(event);
          }
       });
+      
+      if(OFSEP.equals(getCurrentContexte())){
+    	  //listPrvlCode.setVisible(false);
+    	  listPrvlOrgane.setVisible(false);
+    	  listPrvlDiagnostic.setVisible(false);  
+    	  listPrvlConsentType.setVisible(false);
+      }
    }
 
    public void setPatient(final Patient pat){

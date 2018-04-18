@@ -35,7 +35,6 @@
  **/
 package fr.aphp.tumorotek.action.prelevement.ofsep;
 
-import org.zkoss.zk.ui.Component;
 
 import fr.aphp.tumorotek.action.prelevement.FicheLaboInter;
 
@@ -47,15 +46,27 @@ public class FicheLaboInterOFSEP extends FicheLaboInter
 
    private static final long serialVersionUID = 1L;
 
+//   @Override
+//   public void doAfterCompose(final Component comp) throws Exception{
+//      super.doAfterCompose(comp);
+//      
+//      //addLabo.setVisible(false);
+//   }
+   
    @Override
-   public void doAfterCompose(final Component comp) throws Exception{
+   public void switchToCreateMode(){
 
-      initEditableMode();
+      super.switchToCreateMode();
 
-      super.doAfterCompose(comp);
+      this.addLabo.setVisible(false);
+
+   }
+
+   @Override
+   public void switchToEditMode(){
+      super.switchToEditMode();
       
-      addLabo.setVisible(false);
+      this.addLabo.setVisible(false);
 
-      next.setDisabled(!getDroitOnAction("Echantillon", "Creation"));
    }
 }

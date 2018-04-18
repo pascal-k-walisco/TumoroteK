@@ -62,6 +62,8 @@
 					width="200px"/>
 				<column label="${c:l('patient.nbPrelevements')}" 
 					sort="auto" id="nbPrelevementsColumn" />
+				<column label="${c:l('patient.dateLastPrelevement')}" 
+					sort="auto"/>
 				<column label="${c:l('Champ.Echantillon.Organe')}" visible="false"/>
 			</columns>
 			<rows>

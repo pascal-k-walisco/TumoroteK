@@ -32,6 +32,36 @@ public class FicheEchantillonEditOFSEP extends FicheEchantillonEdit
       }
    }
    
+   @Override
+   public void switchToEditMode(){
+      // Initialisation du mode (listes, valeurs...)
+      initQuantiteAndVolume();
+      initEditableMode();
+
+      super.switchToEditMode();
+
+      if(prelevement != null){
+         row1PrlvtEchan.setVisible(false);
+         row2PrlvtEchan.setVisible(true);
+         //row3PrlvtEchan.setVisible(true);
+      }else{
+         row1PrlvtEchan.setVisible(true);
+         row2PrlvtEchan.setVisible(false);
+         //row3PrlvtEchan.setVisible(false);
+      }
+
+      if(!getDroitOnAction("Collaborateur", "Consultation")){
+         operateurAideSaisieEchan.setVisible(false);
+      }
+      if(!getDroitOnAction("Prelevement", "Consultation")){
+         codePrlvtLabel.setSclass("formValue");
+      }else{
+         codePrlvtLabel.setSclass("formLink");
+      }
+
+      getBinder().loadComponent(self);
+   }
+   
    /**
     * Méthode initialisant le champs de formulaire pour le délai
     * de congélation.
@@ -53,25 +83,27 @@ public class FicheEchantillonEditOFSEP extends FicheEchantillonEdit
             minDelai = this.echantillon.getDelaiCgl().intValue();
          }
          
-       	 if(selectedType.getNom().equals("PBMC") || selectedType.getNom().equals("CELLULES")) {
-       		if( this.echantillon.getDelaiCgl().intValue() > 1440 ){ 
-       			delaiCglBox.setStyle("border:1px solid red;"); 
-       		}else {
-       			delaiCglBox.setStyle("border:1px solid green;"); 
-       		}
-       	 }else {
-       	    if( this.echantillon.getDelaiCgl().intValue() > 240 ){ 
-       	    	delaiCglBox.setStyle("border:1px solid red;"); 
-       	    }else {
-       	    	delaiCglBox.setStyle("border:1px solid green;"); 
-       	    }  	  
-       	 }
-       	 // TODO ajouter un seuil pour le thésaurus d'échantillons
-       	 /*if( this.echantillon.getDelaiCgl().intValue() > selectedType.getSeuil() ){ 
-     	    delaiCglBox.setStyle("border:1px solid red;"); 
-     	 }else {
-     		delaiCglBox.setStyle("border:1px solid green;"); 
-     	 }*/
+         if (echantillon.getEchantillonType()!=null) {
+	       	 if(echantillon.getEchantillonType().getNom().equals("PBMC") || echantillon.getEchantillonType().getNom().equals("CELLULES")) {
+	       		if( this.echantillon.getDelaiCgl().intValue() > 1440 ){ 
+	       			delaiCglBox.setStyle("border:1px solid red;"); 
+	       		}else {
+	       			delaiCglBox.setStyle("border:1px solid green;"); 
+	       		}
+	       	 }else {
+	       	    if( this.echantillon.getDelaiCgl().intValue() > 240 ){ 
+	       	    	delaiCglBox.setStyle("border:1px solid red;"); 
+	       	    }else {
+	       	    	delaiCglBox.setStyle("border:1px solid green;"); 
+	       	    }  	  
+	       	 }
+	       	 // TODO ajouter un seuil pour le thésaurus d'échantillons
+	       	 /*if( this.echantillon.getDelaiCgl().intValue() > echantillon.getEchantillonType().getSeuil() ){ 
+	     	    delaiCglBox.setStyle("border:1px solid red;"); 
+	     	 }else {
+	     		delaiCglBox.setStyle("border:1px solid green;"); 
+	     	 }*/
+         }
       }else{
          calculDelaiCgl();
       }
@@ -224,5 +256,14 @@ public class FicheEchantillonEditOFSEP extends FicheEchantillonEdit
          Messagebox.show(handleExceptionMessage(re), "Error", Messagebox.OK, Messagebox.ERROR);
          return false;
       }
+   }
+   
+   //Retroune uniquement le 'nom' du patient (id edmus)
+   @Override
+   public String getNomPatient(){
+      if(prelevement != null){
+         return prelevement.getMaladie().getPatient().getNom();
+      }
+      return "";
    }
 }

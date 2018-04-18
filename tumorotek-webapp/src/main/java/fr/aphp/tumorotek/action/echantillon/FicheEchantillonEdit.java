@@ -632,13 +632,13 @@ public class FicheEchantillonEdit extends AbstractFicheEditController
    /*************************************************************************/
    /************************** PARENT    ************************************/
    /*************************************************************************/
-   private Prelevement prelevement;
+   protected Prelevement prelevement;
 
    // Infos prelevement
-   private Row row1PrlvtEchan;
-   private Row row2PrlvtEchan;
+   protected Row row1PrlvtEchan;
+   protected Row row2PrlvtEchan;
    //private Row row3PrlvtEchan;
-   private Label codePrlvtLabel;
+   protected Label codePrlvtLabel;
 
    /**
     * Affiche la fiche d'un prélèvement.

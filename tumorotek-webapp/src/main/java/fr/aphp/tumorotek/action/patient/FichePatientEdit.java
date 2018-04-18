@@ -85,13 +85,13 @@ public class FichePatientEdit extends AbstractFicheEditController
    protected static final long serialVersionUID = 7781723391910786070L;
 
    // boxes
-   private Textbox nipBox;
+   protected Textbox nipBox;
 
-   private Textbox nomBox;
+   protected Textbox nomBox;
 
    protected Textbox nomNaisBox;
 
-   private Textbox prenomBox;
+   protected Textbox prenomBox;
 
    protected Datebox dateNaisBox;
 
@@ -854,19 +854,19 @@ public class FichePatientEdit extends AbstractFicheEditController
 	   this.nomBox = nomBox;
    }
 
-public Textbox getNipBox() {
-	return nipBox;
-}
-
-public void setNipBox(Textbox nipBox) {
-	this.nipBox = nipBox;
-}
-
-public Textbox getPrenomBox() {
-	return prenomBox;
-}
-
-public void setPrenomBox(Textbox prenomBox) {
-	this.prenomBox = prenomBox;
-}
+	public Textbox getNipBox() {
+		return nipBox;
+	}
+	
+	public void setNipBox(Textbox nipBox) {
+		this.nipBox = nipBox;
+	}
+	
+	public Textbox getPrenomBox() {
+		return prenomBox;
+	}
+	
+	public void setPrenomBox(Textbox prenomBox) {
+		this.prenomBox = prenomBox;
+	}
 }

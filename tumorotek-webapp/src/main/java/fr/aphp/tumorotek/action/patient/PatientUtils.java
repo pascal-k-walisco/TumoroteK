@@ -38,7 +38,9 @@ package fr.aphp.tumorotek.action.patient;
 import static fr.aphp.tumorotek.model.contexte.EContexte.OFSEP;
 import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
 
+import java.util.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -179,6 +181,35 @@ public final class PatientUtils
       }
 
       return nbPrelevements;
+   }
+   
+   /**
+    * Remcupére la date de dernier prélèvements à afficher pour un 
+    * patient spécifié. Ce calcul prend en compte les banques consultables par 
+    * l'utilisateur (droits et autoriseCrossPatient) passées en paramètres.
+    * @param patient
+    * @param liste banks consultables 
+    * @return Date date la plus récente
+    */
+   public static Calendar getDateLastPrelsForPatientAndUser(final Patient patient, final List<Banque> banks){
+	  
+      Calendar lastDate =  null;
+       
+	  final Iterator<Banque> it = banks.iterator();
+
+      while(it.hasNext()){
+    	 Calendar calendar = ManagerLocator.getPatientManager().getDateLastPrelevementsByBanqueManager(patient, it.next());
+    	 if(calendar!=null) {
+    		 if (lastDate != null) {
+        		 if(calendar.after(lastDate)) {
+        			 lastDate = calendar;
+        		 }
+        	 }else {
+        		 lastDate = calendar;
+        	 }
+    	 }
+      }
+      return lastDate;
    }
 
    /**
