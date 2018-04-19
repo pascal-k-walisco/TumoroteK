@@ -55,7 +55,7 @@
 				<column label="${c:l('Champ.Patient.Prenom')}" visible="false"/>
 				<column label="${c:l('Champ.Patient.Nip')}"  visible="false"/>
 				<column label="${c:l('Champ.Patient.Sexe')}" sort="auto(sexe)" />
-				<column label="${c:l('Champ.Patient.DateNaissance')}" sort="auto(dateNaissance)" />
+				<column label="${c:l('Champ.Patient.AnneeNaissance')}" sort="auto(dateNaissance)" />
 				<column label="${c:l('Champ.Patient.PatientEtat')}" visible="false"/>
 				<column label="${c:l('Champ.Patient.DateEtat')}" visible="false"/>
 				<column id="maladiesCol" label="${c:l('patient.maladies')}"

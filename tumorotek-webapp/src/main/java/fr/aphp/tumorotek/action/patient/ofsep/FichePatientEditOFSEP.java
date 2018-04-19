@@ -17,6 +17,7 @@ public class FichePatientEditOFSEP extends FichePatientEdit
    @Override
    public void doAfterCompose(final Component comp) throws Exception{
       super.doAfterCompose(comp);
+      dateNaisYearBox.setMaxlength(4);
    }
    
    @Override
