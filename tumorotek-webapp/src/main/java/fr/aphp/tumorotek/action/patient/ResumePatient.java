@@ -137,6 +137,7 @@ public class ResumePatient
       row5 = (Row) resumePatientGroup.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling();
       linkMaladieLabel = (Label) row5.getFellowIfAny("linkMaladieLabel");
       codeDiagLabel = (Label) row5.getFellowIfAny("codeDiagLabel");
+
    }
 
    /**
@@ -432,4 +433,8 @@ public class ResumePatient
       linkMaladie.setVisible(b);
       row5.setVisible(b);
    }
+
+	public Label getLinkPatientLabel() {
+		return linkPatientLabel;
+	}
 }

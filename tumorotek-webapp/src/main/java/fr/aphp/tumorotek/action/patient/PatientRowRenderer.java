@@ -35,7 +35,12 @@
  **/
 package fr.aphp.tumorotek.action.patient;
 
+import static fr.aphp.tumorotek.model.contexte.EContexte.OFSEP;
+import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,6 +51,7 @@ import org.zkoss.zul.Row;
 import org.zkoss.zul.Vbox;
 
 import fr.aphp.tumorotek.action.ManagerLocator;
+import fr.aphp.tumorotek.action.prelevement.ofsep.FichePrelevementEditOFSEP;
 import fr.aphp.tumorotek.decorator.ObjectTypesFormatters;
 import fr.aphp.tumorotek.decorator.TKSelectObjectRenderer;
 import fr.aphp.tumorotek.model.coeur.patient.Maladie;
@@ -105,14 +111,19 @@ public class PatientRowRenderer extends TKSelectObjectRenderer
       if(anonyme){
          createAnonymeBlock().setParent(row);
       }else{
-         new Label(ObjectTypesFormatters.dateRenderer2(pat.getDateNaissance())).setParent(row);
-         //	    	String dateN = null;
-         //	    	if (this.patient.getDateNaissance() != null) {
-         //				Calendar c = Calendar.getInstance();
-         //				c.setTime(this.patient.getDateNaissance());
-         //				dateN = String.valueOf(c.get(Calendar.YEAR));
-         //			}
-         //			new Label(dateN).setParent(row);
+    	 if(OFSEP.equals(getCurrentContexte())){
+  	    	String dateN = null;
+ 	    	if (this.patient.getDateNaissance() != null) {
+ 				Calendar c = Calendar.getInstance();
+ 				c.setTime(this.patient.getDateNaissance());
+ 				dateN = String.valueOf(c.get(Calendar.YEAR));
+ 			}
+ 			new Label(dateN).setParent(row);
+         }else {
+        	new Label(ObjectTypesFormatters.dateRenderer2(pat.getDateNaissance())).setParent(row);
+         }
+    	  
+         
       }
       // Etat
       new Label(PatientUtils.setEtatFromDBValue(pat)).setParent(row);
@@ -126,11 +137,18 @@ public class PatientRowRenderer extends TKSelectObjectRenderer
 
       // affiche le compte de prélèvements consultables
       new Label(getNbPrelevements()).setParent(row);
-
+      
+      if(OFSEP.equals(getCurrentContexte())){
+    	  // affiche la date du dernier prélèvement pour le contexte OFSEP
+    	  new Label(getDateLastPrelevements()).setParent(row);
+    	  
+      }
+      
       // codes organes : liste des codes exportés pour échantillons
       ObjectTypesFormatters.drawCodesExpLabel(ManagerLocator.getCodeAssigneManager().findFirstCodesOrgByPatientManager(pat), row,
          null, true);
-
+      
+      
    }
 
    /**
@@ -192,5 +210,14 @@ public class PatientRowRenderer extends TKSelectObjectRenderer
 
    public String getNbPrelevements(){
       return String.valueOf(PatientUtils.getNbPrelsForPatientAndUser(patient, banques));
+   }
+   
+   public String getDateLastPrelevements() {
+	  Calendar date = PatientUtils.getDateLastPrelsForPatientAndUser(patient, banques);
+	  if (date != null) {
+		 return ObjectTypesFormatters.dateRenderer2(date);
+	  }else {
+		  return "";
+	  }
    }
 }

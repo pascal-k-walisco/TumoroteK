@@ -38,6 +38,7 @@
 <zk>
     <?component name="listeEchantillon" macroURI="/zuls/echantillon/ListeEchantillon.zul"?>
     <?component name="listeEchantillonBTO" macroURI="/zuls/echantillon/bto/ListeEchantillonBTO.zul"?>
+    <?component name="listeEchantillonOFSEP" macroURI="/zuls/echantillon/ofsep/ListeEchantillonOFSEP.zul"?>
     <?component name="ficheEchantillonStatic" macroURI="/zuls/echantillon/FicheEchantillonStatic.zul"?>
     <?component name="ficheAnnotation" macroURI="/zuls/annotation/FicheAnnotation.zul" ?>
 
@@ -48,6 +49,7 @@
                 <div>
                     <listeEchantillon id="listeEchantillon" hflex="1" visible="false"/>
                     <listeEchantillonBTO id="listeEchantillonBTO" hflex="1" visible="false"/>
+                    <listeEchantillonOFSEP id="listeEchantillonOFSEP" hflex="1" visible="false"/>
                 </div>
             </west>
             <center id="ficheRegion">

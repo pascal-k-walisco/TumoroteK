@@ -397,4 +397,12 @@ public interface PatientManager
     * @since 2.0.13
    =	 */
    Patient getExistingPatientManager(Patient pat);
+   
+   /**
+    * Récupère la date du dernier prélèvement d'un patient pour une banque.
+    * @param pat
+    * @param banque
+    * @return date
+    */
+   Calendar getDateLastPrelevementsByBanqueManager(Patient pat, Banque bank);
 }

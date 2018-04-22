@@ -33,52 +33,40 @@
  * avez pris connaissance de la licence CeCILL, et que vous en avez
  * accepté les termes.
  **/
-package fr.aphp.tumorotek.action.patient;
+package fr.aphp.tumorotek.action.prelevement.ofsep;
 
-import fr.aphp.tumorotek.action.constraints.ConstCode;
-import fr.aphp.tumorotek.action.constraints.ConstWord;
 
-/**
- * Utility class fournissant les contraintes qui seront appliquées dans
- * l'interface par zk.
- * Date: 26/07/2010.
- *
- * @author Mathieu BARTHELEMY
- * @version 2.0
- */
-public final class PatientConstraints
+import fr.aphp.tumorotek.action.prelevement.FicheLaboInter;
+
+
+public class FicheLaboInterOFSEP extends FicheLaboInter
 {
 
-   private PatientConstraints(){}
+   // private final Log log = LogFactory.getLog(FicheLaboInter.class);
 
-   private static ConstCode codeNullConstraint = new ConstCode();
-   static{
-      codeNullConstraint.setNullable(true);
-      codeNullConstraint.setSize(20);
-   }
+   private static final long serialVersionUID = 1L;
+
+//   @Override
+//   public void doAfterCompose(final Component comp) throws Exception{
+//      super.doAfterCompose(comp);
+//      
+//      //addLabo.setVisible(false);
+//   }
    
-   private static ConstWord nomConstraint = new ConstWord();
-   static{
-      nomConstraint.setNullable(false);
-      nomConstraint.setSize(50);
+   @Override
+   public void switchToCreateMode(){
+
+      super.switchToCreateMode();
+
+      this.addLabo.setVisible(false);
+
    }
 
-   private static ConstWord nomNullConstraint = new ConstWord();
-   static{
-      nomNullConstraint.setNullable(true);
-      nomNullConstraint.setSize(50);
-   }
-   
-   public static ConstCode getCodeNullConstraint(){
-      return codeNullConstraint;
-   }
+   @Override
+   public void switchToEditMode(){
+      super.switchToEditMode();
+      
+      this.addLabo.setVisible(false);
 
-   public static ConstWord getNomConstraint(){
-      return nomConstraint;
    }
-
-   public static ConstWord getNomNullConstraint(){
-      return nomNullConstraint;
-   }
-
 }

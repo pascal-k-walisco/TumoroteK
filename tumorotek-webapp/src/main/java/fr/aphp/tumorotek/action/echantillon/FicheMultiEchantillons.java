@@ -144,42 +144,42 @@ public class FicheMultiEchantillons extends FicheEchantillonEdit
 
    // Editable components : mode d'édition ou de création.
    private Label operateurAideSaisieEchan;
-   private Combobox separatorBox;
+   protected Combobox separatorBox;
    private Intbox premierCodeBoxEchan;
    private Intbox dernierCodeBoxEchan;
    private Textbox premiereLettreBoxEchan;
    private Textbox derniereLettreBoxEchan;
-   private Radio numNombres;
+   protected Radio numNombres;
    private Radio numLettres;
    private Box choixNumerotation;
    private Button changeNumerotation;
 
-   private Grid echantillonsList;
+   protected Grid echantillonsList;
 
-   private Button stockageEchantillons;
+   protected Button stockageEchantillons;
 
    // Objets Principaux.
    private Maladie maladie = new Maladie();
-   private List<Echantillon> echantillons = new ArrayList<>();
-   private List<Object> addedEchantillons = new ArrayList<>();
-   private List<EchantillonDTO> echantillonsDecorated = new ArrayList<>();
+   protected List<Echantillon> echantillons = new ArrayList<>();
+   protected List<Object> addedEchantillons = new ArrayList<>();
+   protected List<EchantillonDTO> echantillonsDecorated = new ArrayList<>();
    private final Map<TKStockableObject, Emplacement> echansEmpl = new HashMap<>();
-   private List<String> usedCodesEchantillons = new ArrayList<>();
+   protected List<String> usedCodesEchantillons = new ArrayList<>();
 
    // Variables formulaire.
    private String[] connaissances = new String[] {"OUI", "NON"};
 
-   private Integer premierCode;
-   private Integer dernierCode;
-   private String premiereLettre;
-   private String derniereLettre;
-   private List<String> lettres = new ArrayList<>();
+   protected Integer premierCode;
+   protected Integer dernierCode;
+   protected String premiereLettre;
+   protected String derniereLettre;
+   protected List<String> lettres = new ArrayList<>();
 
    private boolean isPrelevementProcedure = false;
 
    private final EchantillonDecoratorRowRenderer echanDecoRenderer = new EchantillonDecoratorRowRenderer();
 
-   private final List<FileBatch> batches = new ArrayList<>();
+   protected final List<FileBatch> batches = new ArrayList<>();
 
    /**
     * Indique au comportement de la fiche si elle appartient à
@@ -2432,7 +2432,7 @@ public class FicheMultiEchantillons extends FicheEchantillonEdit
     * Valide l'application de la sterilite au niveau echantillon.
     * @param value
     */
-   private void validateSterilite(final boolean value){
+   protected void validateSterilite(final boolean value){
       Errors errs = null;
       //String field = "";
 

@@ -35,7 +35,11 @@
  **/
 package fr.aphp.tumorotek.decorator;
 
+import static fr.aphp.tumorotek.model.contexte.EContexte.OFSEP;
+import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
+
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -86,15 +90,18 @@ public class PatientItemRenderer implements ListitemRenderer<Patient>
       new Listcell(pat.getNom()).setParent(li);
       new Listcell(pat.getPrenom()).setParent(li);
       new Listcell(PatientUtils.setSexeFromDBValue(pat)).setParent(li);
-      new Listcell(ObjectTypesFormatters.dateRenderer2(pat.getDateNaissance())).setParent(li);
-      //        String dateN = null;
-      //    	if (pat.getDateNaissance() != null) {
-      //			Calendar c = Calendar.getInstance();
-      //			c.setTime(pat.getDateNaissance());
-      //			dateN = String.valueOf(c.get(Calendar.YEAR));
-      //		}
-      //		new Listcell(dateN).setParent(li);
-
+      if(OFSEP.equals(getCurrentContexte())) {
+        String dateN = null;
+      	if (pat.getDateNaissance() != null) {
+  			Calendar c = Calendar.getInstance();
+  			c.setTime(pat.getDateNaissance());
+  			dateN = String.valueOf(c.get(Calendar.YEAR));
+  		}
+  		new Listcell(dateN).setParent(li);
+      }else {
+    	  new Listcell(ObjectTypesFormatters.dateRenderer2(pat.getDateNaissance())).setParent(li);  
+      }
+      
       if(isFusion){
          //new Listcell(String.valueOf(getNbPrelevements(pat)))
          //.setParent(li);

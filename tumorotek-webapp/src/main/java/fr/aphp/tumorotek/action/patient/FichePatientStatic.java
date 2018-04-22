@@ -89,7 +89,7 @@ public class FichePatientStatic extends AbstractFicheStaticController
    private Group referentsGroup;
 
    // Objets Principaux
-   private Patient patient;
+   protected Patient patient;
 
    // dateEtatDeces
    private Label dateEtatDecesField;
@@ -362,6 +362,7 @@ public class FichePatientStatic extends AbstractFicheStaticController
       closeMaladiePanels();
       this.lastPanelId = this.lastPanelId + 1;
       final HtmlMacroComponent mPanel = drawAMaladiePanel(null, this.lastPanelId, false);
+      
       // passe la fiche en mode create
       ((FicheMaladie) mPanel.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true)).switchToCreateMode();
       // passe le patient
@@ -370,6 +371,7 @@ public class FichePatientStatic extends AbstractFicheStaticController
       // ouvre le panel
       ((FicheMaladie) mPanel.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true)).getContainer()
          .setOpen(true);
+      
       // gele la toolbar en attendant que la maladie soit crée ou avortée.
       disableToolBar(true);
    }
@@ -481,7 +483,7 @@ public class FichePatientStatic extends AbstractFicheStaticController
           * provoque un bug d'affichage sur les petits écrans :
           * les onglets disparaissent. */
          if(i == 1){ // 1 seule maladie
-            ((FicheMaladie) ua.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true)).openAll();
+    	   ((FicheMaladie) ua.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true)).openAll();	
          }
          this.lastPanelId = i;
          //			} else { // dessine toutes maladies sauf sous-jacentes
@@ -515,7 +517,7 @@ public class FichePatientStatic extends AbstractFicheStaticController
     * @param si      seuls les prelevements doivent être affichés
     * @return macro component ficheMaladie
     */
-   private HtmlMacroComponent drawAMaladiePanel(final Maladie maladie, final int order, final boolean prelevementsOnly){
+   	private HtmlMacroComponent drawAMaladiePanel(final Maladie maladie, final int order, final boolean prelevementsOnly){
       HtmlMacroComponent ua;
 
       // Injection des contextes
@@ -530,19 +532,17 @@ public class FichePatientStatic extends AbstractFicheStaticController
       ua.setWidth("100%");
       ua.applyProperties();
       ua.afterCompose();
+      
       if(maladie != null){
-         ((FicheMaladie) ua.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true)).setObject(maladie);
+        ((FicheMaladie) ua.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true)).setObject(maladie);
       }
       ((FicheMaladie) ua.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true)).setFichePatient(this);
       ((FicheMaladie) ua.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true))
-         .setObjectTabController(getObjectTabController());
-
+        .setObjectTabController(getObjectTabController());
       if(prelevementsOnly){
-         ((FicheMaladie) ua.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true)).setPrelevementsOnly();
+        ((FicheMaladie) ua.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true)).setPrelevementsOnly();
       }
-
       this.maladiePanels.add(((FicheMaladie) ua.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true)));
-
       return ua;
    }
 

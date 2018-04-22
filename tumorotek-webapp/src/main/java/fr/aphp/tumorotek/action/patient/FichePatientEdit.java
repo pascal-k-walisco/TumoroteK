@@ -421,9 +421,9 @@ public class FichePatientEdit extends AbstractFicheEditController
 
    @Override
    public void clearConstraints(){
-      Clients.clearWrongValue(nipBox);
-      Clients.clearWrongValue(nomBox);
-      Clients.clearWrongValue(prenomBox);
+      Clients.clearWrongValue(getNipBox());
+      Clients.clearWrongValue(getNomBox());
+      Clients.clearWrongValue(getPrenomBox());
       Clients.clearWrongValue(nomNaisBox);
       Clients.clearWrongValue(paysNaisBox);
       Clients.clearWrongValue(villeNaisBox);
@@ -572,7 +572,7 @@ public class FichePatientEdit extends AbstractFicheEditController
     * nomBox. Cette valeur sera mise en majuscules.
     */
    public void onBlur$nomBox(){
-      nomBox.setValue(nomBox.getValue().toUpperCase().trim());
+      getNomBox().setValue(getNomBox().getValue().toUpperCase().trim());
    }
 
    /**
@@ -588,7 +588,7 @@ public class FichePatientEdit extends AbstractFicheEditController
     * prenomBox. Cette valeur sera mise en majuscules.
     */
    public void onBlur$prenomBox(){
-      prenomBox.setValue(prenomBox.getValue().toUpperCase().trim());
+      getPrenomBox().setValue(getPrenomBox().getValue().toUpperCase().trim());
    }
 
    /**
@@ -632,7 +632,7 @@ public class FichePatientEdit extends AbstractFicheEditController
 
    @Override
    public void setFocusOnElement(){
-      nipBox.setFocus(true);
+      getNipBox().setFocus(true);
    }
 
    /*************************************************************************/
@@ -845,4 +845,28 @@ public class FichePatientEdit extends AbstractFicheEditController
          getFicheAnnotationInline().setObjectTabController(getObjectTabController());
       }
    }
+
+   public Textbox getNomBox() {
+	   return nomBox;
+   }
+
+   public void setNomBox(Textbox nomBox) {
+	   this.nomBox = nomBox;
+   }
+
+	public Textbox getNipBox() {
+		return nipBox;
+	}
+	
+	public void setNipBox(Textbox nipBox) {
+		this.nipBox = nipBox;
+	}
+	
+	public Textbox getPrenomBox() {
+		return prenomBox;
+	}
+	
+	public void setPrenomBox(Textbox prenomBox) {
+		this.prenomBox = prenomBox;
+	}
 }

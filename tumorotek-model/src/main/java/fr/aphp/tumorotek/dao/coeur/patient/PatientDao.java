@@ -255,5 +255,13 @@ public interface PatientDao extends GenericDaoJpa<Patient, Integer>
     * @return long
     */
    List<Long> findCountByReferent(Collaborateur referent);
+   
+   /**
+    * Retourne la date du dernier  prelevement d'un patient pour une banque.
+    * @param pat
+    * @param banque
+    * @return date
+    */
+   List<Calendar> findDateLastPrelevementsByBanque(Patient pat, Banque bank);
 
 }

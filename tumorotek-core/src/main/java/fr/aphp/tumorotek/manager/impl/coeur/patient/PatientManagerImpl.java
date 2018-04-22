@@ -875,7 +875,12 @@ public class PatientManagerImpl implements PatientManager
    public Long getCountPrelevementsByBanqueManager(final Patient pat, final Banque bank){
       return patientDao.findCountPrelevementsByBanque(pat, bank).get(0);
    }
-
+   
+   @Override
+   public Calendar getDateLastPrelevementsByBanqueManager(final Patient pat, final Banque bank){
+	  return patientDao.findDateLastPrelevementsByBanque(pat, bank).get(0);
+   }
+   
    @Override
    public void updateMultipleObjectsManager(final List<Patient> patients, final List<Patient> basePatients,
       final List<AnnotationValeur> listAnnoToCreateOrUpdate, final List<AnnotationValeur> listAnnoToDelete,

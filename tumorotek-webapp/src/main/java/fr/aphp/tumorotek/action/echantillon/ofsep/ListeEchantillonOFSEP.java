@@ -1,10 +1,10 @@
 /**
  * Copyright ou © ou Copr. Ministère de la santé, FRANCE (01/01/2011)
  * dsi-projet.tk@aphp.fr
- *
+ * <p>
  * Ce logiciel est un programme informatique servant à la gestion de
  * l'activité de biobanques.
- *
+ * <p>
  * Ce logiciel est régi par la licence CeCILL soumise au droit français
  * et respectant les principes de diffusion des logiciels libres. Vous
  * pouvez utiliser, modifier et/ou redistribuer ce programme sous les
@@ -16,7 +16,7 @@
  * Pour les mêmes raisons, seule une responsabilité restreinte pèse sur
  * l'auteur du programme, le titulaire des droits patrimoniaux et les
  * concédants successifs.
- *
+ * <p>
  * A cet égard  l'attention de l'utilisateur est attirée sur les
  * risques associés au chargement,  à l'utilisation,  à la modification
  * et/ou au  développement et à la reproduction du logiciel par
@@ -28,57 +28,21 @@
  * besoins dans des conditions permettant d'assurer la sécurité de leurs
  * systèmes et ou de leurs données et, plus généralement, à l'utiliser
  * et l'exploiter dans les mêmes conditions de sécurité.
- *
+ * <p>
  * Le fait que vous puissiez accéder à cet en-tête signifie que vous
  * avez pris connaissance de la licence CeCILL, et que vous en avez
  * accepté les termes.
  **/
-package fr.aphp.tumorotek.action.patient;
+package fr.aphp.tumorotek.action.echantillon.ofsep;
 
-import fr.aphp.tumorotek.action.constraints.ConstCode;
-import fr.aphp.tumorotek.action.constraints.ConstWord;
+import fr.aphp.tumorotek.action.echantillon.ListeEchantillon;
 
 /**
- * Utility class fournissant les contraintes qui seront appliquées dans
- * l'interface par zk.
- * Date: 26/07/2010.
- *
- * @author Mathieu BARTHELEMY
- * @version 2.0
+ * Héritage de la classe {@link ListeEchantillon} pour le contexte OFSEP
+ * @since 2.2.0
+ * @version 2.2.0
  */
-public final class PatientConstraints
+public class ListeEchantillonOFSEP extends ListeEchantillon
 {
-
-   private PatientConstraints(){}
-
-   private static ConstCode codeNullConstraint = new ConstCode();
-   static{
-      codeNullConstraint.setNullable(true);
-      codeNullConstraint.setSize(20);
-   }
-   
-   private static ConstWord nomConstraint = new ConstWord();
-   static{
-      nomConstraint.setNullable(false);
-      nomConstraint.setSize(50);
-   }
-
-   private static ConstWord nomNullConstraint = new ConstWord();
-   static{
-      nomNullConstraint.setNullable(true);
-      nomNullConstraint.setSize(50);
-   }
-   
-   public static ConstCode getCodeNullConstraint(){
-      return codeNullConstraint;
-   }
-
-   public static ConstWord getNomConstraint(){
-      return nomConstraint;
-   }
-
-   public static ConstWord getNomNullConstraint(){
-      return nomNullConstraint;
-   }
-
+	private static final long serialVersionUID = 1L;
 }

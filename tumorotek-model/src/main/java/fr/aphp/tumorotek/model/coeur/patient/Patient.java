@@ -103,6 +103,8 @@ import fr.aphp.tumorotek.model.contexte.Banque;
    @NamedQuery(name = "Patient.findAllNoms", query = "SELECT p.nom FROM Patient p ORDER BY p.nom"),
    @NamedQuery(name = "Patient.findByExcludedId", query = "SELECT p FROM Patient p WHERE p.patientId != ?1" + " and p.nom = ?2"),
    @NamedQuery(name = "Patient.findCountMaladies", query = "SELECT count(m) FROM Maladie m WHERE m.patient = ?1"),
+   @NamedQuery(name = "Patient.findDateLastPrelevementsByBanque",
+   	  query = "SELECT MAX(p.datePrelevement) FROM Prelevement p " + "WHERE p.maladie.patient = ?1 and p.banque = ?2"),
    @NamedQuery(name = "Patient.findCountPrelevementsByBanque",
       query = "SELECT count(p) FROM Prelevement p " + "WHERE p.maladie.patient = ?1 and p.banque = ?2"),
    @NamedQuery(name = "Patient.findCountPrelevements",

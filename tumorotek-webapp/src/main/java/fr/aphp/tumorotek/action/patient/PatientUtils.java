@@ -35,7 +35,12 @@
  **/
 package fr.aphp.tumorotek.action.patient;
 
+import static fr.aphp.tumorotek.model.contexte.EContexte.OFSEP;
+import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
+
+import java.util.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -62,9 +67,8 @@ import fr.aphp.tumorotek.webapp.general.SessionUtils;
  */
 public final class PatientUtils
 {
-
-   private PatientUtils(){}
-
+   private PatientUtils() {}
+	
    public static final LabelCodeItem SEXE_EMPTY = new LabelCodeItem("", null);
    public static final LabelCodeItem SEXE_M = new LabelCodeItem(Labels.getLabel("patient.sexe.homme"), "M");
    public static final LabelCodeItem SEXE_F = new LabelCodeItem(Labels.getLabel("patient.sexe.femme"), "F");
@@ -73,11 +77,11 @@ public final class PatientUtils
    private static List<LabelCodeItem> sexes = new ArrayList<>();
    static{
       sexes.add(SEXE_EMPTY);
-      sexes.add(SEXE_M);
-      sexes.add(SEXE_F);
-      sexes.add(SEXE_IND);
+	  sexes.add(SEXE_M);
+	  sexes.add(SEXE_F);
+	  sexes.add(SEXE_IND);
    }
-
+   
    public static final LabelCodeItem ETAT_V = new LabelCodeItem(Labels.getLabel("patient.etat.vivant"), "V");
    public static final LabelCodeItem ETAT_VF = new LabelCodeItem(Labels.getLabel("patient.etat.vivant.f"), "V");
    public static final LabelCodeItem ETAT_D = new LabelCodeItem(Labels.getLabel("patient.etat.decede"), "D");
@@ -95,9 +99,12 @@ public final class PatientUtils
       etatsF.add(ETAT_DF);
       etatsF.add(ETAT_I);
    }
-
+   
    public static List<LabelCodeItem> getSexes(){
-      return sexes;
+      /*if(OFSEP.equals(getCurrentContexte())){
+    	  sexes.remove(sexes.size() - 1);
+      }*/
+	  return sexes;
    }
 
    public static List<LabelCodeItem> getEtats(){
@@ -174,6 +181,35 @@ public final class PatientUtils
       }
 
       return nbPrelevements;
+   }
+   
+   /**
+    * Remcupére la date de dernier prélèvements à afficher pour un 
+    * patient spécifié. Ce calcul prend en compte les banques consultables par 
+    * l'utilisateur (droits et autoriseCrossPatient) passées en paramètres.
+    * @param patient
+    * @param liste banks consultables 
+    * @return Date date la plus récente
+    */
+   public static Calendar getDateLastPrelsForPatientAndUser(final Patient patient, final List<Banque> banks){
+	  
+      Calendar lastDate =  null;
+       
+	  final Iterator<Banque> it = banks.iterator();
+
+      while(it.hasNext()){
+    	 Calendar calendar = ManagerLocator.getPatientManager().getDateLastPrelevementsByBanqueManager(patient, it.next());
+    	 if(calendar!=null) {
+    		 if (lastDate != null) {
+        		 if(calendar.after(lastDate)) {
+        			 lastDate = calendar;
+        		 }
+        	 }else {
+        		 lastDate = calendar;
+        	 }
+    	 }
+      }
+      return lastDate;
    }
 
    /**

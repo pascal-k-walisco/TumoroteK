@@ -33,8 +33,8 @@
 	* avez pris connaissance de la licence CeCILL, et que vous en avez 
 	* accepté les termes. 
 -->
-<window id="lwinPrelevement" border="none"
-	apply="fr.aphp.tumorotek.action.prelevement.ListePrelevement">
+<window id="lwinPrelevementOFSEP" border="none"
+	apply="fr.aphp.tumorotek.action.prelevement.ofsep.ListePrelevementOFSEP">
 	<panel border="none" sclass="fichePanelv2" collapsible="true"
 		id="listPanel">
 		<panelchildren id="scrollPan">
@@ -42,10 +42,10 @@
 				autopaging="true" vflex="1"
 				fixedLayout="true" span="true"
 				sizedByContent="true" sclass="gridListStyle"
-				model="@{lwinPrelevement$composer.listObjects 
+				model="@{lwinPrelevementOFSEP$composer.listObjects 
 					load-after='findByListCodes.onClick,
 					findByListPatients.onClick'}"
-				rowRenderer="${lwinPrelevement$composer.listObjectsRenderer}">
+				rowRenderer="${lwinPrelevementOFSEP$composer.listObjectsRenderer}">
 				<columns menupopup="auto" sizable="true" width="100%">
 					<column width="40px">
 						<checkbox id="checkAll" />
@@ -54,23 +54,23 @@
 					<column label="${c:l('general.code')}"
 						sort="auto(code)" />
 					<column label="${c:l('Entite.Banque')}" 
-						visible="@{lwinPrelevement$composer.isTtesCollection}" />
-					<column label="${c:l('prelevement.patient')}"
+						visible="@{lwinPrelevementOFSEP$composer.isTtesCollection}" />
+					<column label="${c:l('Champ.Patient.IdEdmus')}"
 						sort="auto(maladie.patient.nom)" />
-					<column label="${c:l('Champ.Patient.Nip')}" visible="false" />
+					<column label="${c:l('Champ.Patient.Nip')}" visible="false"/>
 					<column label="${c:l('prelevement.maladie')}"
-						visible="@{lwinPrelevement$composer.banqueDefMaladies}"
+						visible="@{lwinPrelevementOFSEP$composer.banqueDefMaladies}"
 						width="150px" />
 					<column
 						label="${c:l('prelevement.datePrelevementCourt')}"
 						sort="auto(datePrelevement)" />
-					<column
-						label="${c:l('Champ.Prelevement.DatePeremption')}"
-						visible="false"/>	
+					<column 
+						label="${c:l('Champ.Prelevement.DatePeremption')}" 
+						visible="false" />	
 					<column
 						label="${c:l('Champ.Prelevement.Nature.Nature')}"
 						sort="auto(nature.nature)" />
-					<column label="${c:l('general.diagnostic')}" />
+					<column label="${c:l('general.diagnostic')}" visible="false"/>
 					<column align="center" sort="auto"
 						id="nbEchantillonsColumn">
 						<vbox align="center">
@@ -84,7 +84,7 @@
 					</column>
 					<column
 						label="${c:l('Champ.Prelevement.ConsentType')}"
-						sort="auto(consentType.type)" />
+						sort="auto(consentType.type)" visible="false"/>
 				</columns>
 				<rows>
 					<row self="@{each='currPrelevement'}"
@@ -107,7 +107,7 @@
 						</div>
 						<listbox id="dateCreationBox" mold="select"
 							rows="1"
-							model="@{lwinPrelevement$composer.creationDates,
+							model="@{lwinPrelevementOFSEP$composer.creationDates,
 								save-when='find.onClick, self.onBlur, self.onOK'}">
 							<listitem self="@{each='date'}"
 								value="@{date}">
@@ -119,11 +119,11 @@
 						<radio id="codePrlvt" />
 						<div width="200px">
 							<label
-								value="${c:l('prelevement.search.code.labo')}"
+								value="${c:l('prelevement.search.code')}"
 								sclass="formLabel" />
 						</div>
 						<textbox id="codeBoxPrlvt"
-							value="@{lwinPrelevement$composer.searchCode,
+							value="@{lwinPrelevementOFSEP$composer.searchCode,
 		        			save-when='find.onClick, self.onOK'}"
 							forward="onOK=onPressEnterKey()" />
 						<button id="findByListCodes" height="20px"
@@ -133,11 +133,11 @@
 					<hlayout sclass="z-valign-bottom">
 						<radio id="patientPrlvt" />
 						<div width="200px">
-							<label value="${c:l('prelevement.patient')}"
+							<label value="${c:l('prelevement.idEdmus')}"
 								sclass="formLabel" />
 						</div>
 						<textbox id="nomPatientPrlvt"
-							value="@{lwinPrelevement$composer.searchNomPatient,
+							value="@{lwinPrelevementOFSEP$composer.searchNomPatient,
 							save-when='find.onClick, self.onOK'}"
 							forward="onOK=onPressEnterKey()" />
 						<button id="findByListPatients" height="20px"
@@ -191,10 +191,6 @@
 						image="/images/icones/small_action.png" width="36px"
 						height="24px">
 						<menupopup>
-						    <menuitem id="sendMailItem"
-								image="/images/icones/dossier_inbox.png"
-								label="${c:l('general.actions.mail')}"
-								disabled="true" />
 							<menuitem id="modificationItem"
 								image="/images/icones/edit.png"
 								label="${c:l('general.actions.modification.multiple')}"
@@ -208,14 +204,6 @@
 							<menuitem id="exportItemAdv"
 								image="/images/icones/export.png"
 								label="${c:l('general.actions.exporterAdv')}" disabled="true" />
-							<menuitem id="exportItemOfsep"
-								image="/images/icones/export.png"
-								label="${c:l('general.actions.exporterOfsep')}" disabled="true" />
-							<!--
-							<menuitem id="importItemOfsep"
-								image="/images/icones/export.png"
-								label="${c:l('general.actions.importerOfsep')}" disabled="true" />
-							-->
 							<menuitem id="deleteItem" image="/images/icones/delete.png"
 								label="${c:l('general.delete')}" disabled="true" />
 						</menupopup>

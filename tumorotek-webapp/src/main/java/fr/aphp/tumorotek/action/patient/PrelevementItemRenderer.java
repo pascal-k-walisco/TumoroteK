@@ -93,9 +93,9 @@ public class PrelevementItemRenderer implements ListitemRenderer<Prelevement>
          codeCell.addForward(null, li.getParent(), "onClickPrelevementCode", prel);
          codeCell.setClass("formLink");
       }
-      if(getOtherConsultBanks() != null){ // mode otherBank prelevement
+      //if(getOtherConsultBanks() != null){ // mode otherBank prelevement
          new Listcell(prel.getBanque().getNom()).setParent(li);
-      }
+      //}
       if(prel.getNature() != null){
          new Listcell(prel.getNature().getNature()).setParent(li);
       }else{

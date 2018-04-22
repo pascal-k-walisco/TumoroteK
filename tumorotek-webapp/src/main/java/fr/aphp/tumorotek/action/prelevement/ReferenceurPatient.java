@@ -35,10 +35,15 @@
  **/
 package fr.aphp.tumorotek.action.prelevement;
 
+import static fr.aphp.tumorotek.model.contexte.EContexte.BTO;
+import static fr.aphp.tumorotek.model.contexte.EContexte.OFSEP;
+import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.zkoss.util.resource.Labels;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Components;
 import org.zkoss.zk.ui.Executions;
@@ -46,7 +51,16 @@ import org.zkoss.zk.ui.Path;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.databind.AnnotateDataBinder;
-import org.zkoss.zul.*;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Div;
+import org.zkoss.zul.Grid;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Listheader;
+import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.Radio;
+import org.zkoss.zul.Radiogroup;
+import org.zkoss.zul.Row;
+import org.zkoss.zul.Textbox;
 
 import fr.aphp.tumorotek.action.ManagerLocator;
 import fr.aphp.tumorotek.action.annotation.FicheAnnotation;
@@ -56,7 +70,9 @@ import fr.aphp.tumorotek.action.patient.FicheMaladie;
 import fr.aphp.tumorotek.action.patient.FichePatientEdit;
 import fr.aphp.tumorotek.action.patient.PatientController;
 import fr.aphp.tumorotek.action.patient.bto.FichePatientEditBTO;
+import fr.aphp.tumorotek.action.patient.ofsep.FichePatientEditOFSEP;
 import fr.aphp.tumorotek.action.prelevement.bto.FichePrelevementEditBTO;
+import fr.aphp.tumorotek.action.prelevement.ofsep.FichePrelevementEditOFSEP;
 import fr.aphp.tumorotek.action.sip.SipFactory;
 import fr.aphp.tumorotek.decorator.MaladieDecorator;
 import fr.aphp.tumorotek.decorator.PatientItemRenderer;
@@ -68,9 +84,6 @@ import fr.aphp.tumorotek.model.interfacage.PatientSip;
 import fr.aphp.tumorotek.model.interfacage.PatientSipSejour;
 import fr.aphp.tumorotek.model.qualite.OperationType;
 import fr.aphp.tumorotek.webapp.general.SessionUtils;
-
-import static fr.aphp.tumorotek.model.contexte.EContexte.BTO;
-import static fr.aphp.tumorotek.webapp.general.SessionUtils.getCurrentContexte;
 
 /**
  * Controller du référenceur Patient intégré dans la fiche prélèvement.
@@ -112,7 +125,11 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
    private Div ficheMaladieWithPatientDiv;
    private Textbox ndaBox;
    private Row ndaRow;
-   private Listheader listMedcinRef; //TODO Jamais utilisé ?
+   private Listheader listMedcinRef;
+   private Listheader nipListPatientBox;
+   private Listheader prenomListPatientBox;
+   private Listheader dateNaissListPatientBox;
+   private Listheader nomListPatientBox;
    private boolean banqueDefMaladies;
 
    // patientBox items
@@ -125,7 +142,7 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
    private MaladieDecorator selectedMaladieByNda = null;
    private static ListitemRenderer<Patient> patientRenderer = new PatientItemRenderer(true);
    private AnnotateDataBinder referenceurBinder;
-
+   
    @Override
    public void doAfterCompose(final Component comp) throws Exception{
       super.doAfterCompose(comp);
@@ -136,7 +153,14 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
          listMedcinRef.setVisible(false);
 
       }*/
-
+      if(OFSEP.equals(getCurrentContexte())) {
+    	  nipListPatientBox.setVisible(false);
+    	  prenomListPatientBox.setVisible(false);  
+          listMedcinRef.setVisible(false);
+          dateNaissListPatientBox.setLabel(Labels.getLabel("Champ.Patient.AnneeNaissance"));
+          nomListPatientBox.setLabel(Labels.getLabel("Champ.Patient.IdEdmus"));
+      }
+     
       referenceurBinder = new AnnotateDataBinder(comp);
       referenceurBinder.loadAll();
 
@@ -339,14 +363,19 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
    //	}
 
    public void onClick$goForIt(){
-      final String critereValue = nomNipNdaBox.getValue();
+      final String critereValue = getNomNipNdaBox().getValue();
 
       if(BTO.equals(getCurrentContexte())){
          ((FichePrelevementEditBTO) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditBTO$composer", true))
             .getObjectTabController().setPatientSip(null);
          ((FichePrelevementEditBTO) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditBTO$composer", true))
             .openSelectPatientWindow(Path.getPath(self), "onGetPatientFromSelection", false, critereValue, null);
-      }else{
+      }else if(OFSEP.equals(getCurrentContexte())){
+          ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true))
+          .getObjectTabController().setPatientSip(null);
+          ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true))
+          .openSelectPatientWindow(Path.getPath(self), "onGetPatientFromSelection", false, critereValue, null);
+    }else{
          ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEdit$composer", true))
             .getObjectTabController().setPatientSip(null);
          ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEdit$composer", true))
@@ -385,6 +414,11 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
                   true)).clearRisques();
                ((FichePrelevementEditBTO) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditBTO$composer",
                   true)).clearProtocoles();
+            }else if(OFSEP.equals(getCurrentContexte())){
+                ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer",
+                    true)).clearRisques();
+                ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer",
+                    true)).clearProtocoles();
             }else{
                ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEdit$composer", true))
                   .clearRisques();
@@ -396,6 +430,9 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
                final PatientSip pSip = ManagerLocator.getPatientSipManager().findByNipLikeManager(patSel.getNip(), true).get(0);
                if(BTO.equals(getCurrentContexte())){
                   ((FichePrelevementEditBTO) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditBTO$composer",
+                     true)).getObjectTabController().setPatientSip(pSip);
+               }else if(OFSEP.equals(getCurrentContexte())){
+                  ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer",
                      true)).getObjectTabController().setPatientSip(pSip);
                }else{
                   ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEdit$composer", true))
@@ -413,7 +450,7 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
                   }
                } else {*/
                for(final PatientSipSejour sj : pSip.getSejours()){
-                  if(sj.getNumero().equalsIgnoreCase(nomNipNdaBox.getValue())){
+                  if(sj.getNumero().equalsIgnoreCase(getNomNipNdaBox().getValue())){
                      ((FichePatientEdit) fichePatientDiv.getFellow("fwinPatientEdit")
                         .getAttributeOrFellow("fwinPatientEdit$composer", true)).getNdaBox().setValue(sj.getNumero());
                   }
@@ -561,7 +598,10 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
          if(BTO.equals(getCurrentContexte())){
             ((FichePrelevementEditBTO) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditBTO$composer", true))
                .setMaladie(maladie);
-         }else{
+         }else if(OFSEP.equals(getCurrentContexte())){
+             ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true))
+             .setMaladie(maladie);
+         }else {
             ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEdit$composer", true))
                .setMaladie(maladie);
          }
@@ -581,6 +621,10 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
          ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditBTO$composer", true))
             .selectRisques(ManagerLocator.getRisqueManager().findByPatientAndPlateformeManager(pat,
                SessionUtils.getPlateforme(sessionScope)));
+      }else if(OFSEP.equals(getCurrentContexte())){
+          ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true))
+          .selectRisques(ManagerLocator.getRisqueManager().findByPatientAndPlateformeManager(pat,
+             SessionUtils.getPlateforme(sessionScope)));
       }else{
          ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEdit$composer", true))
             .selectRisques(ManagerLocator.getRisqueManager().findByPatientAndPlateformeManager(pat,
@@ -731,7 +775,11 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
          && null != fichePatientDiv.getFellow("fwinPatientEditBTO").getFellowIfAny("ficheTissuInlineAnnoPatient")){
          return ((FicheAnnotationInline) fichePatientDiv.getFellow("fwinPatientEditBTO").getFellow("ficheTissuInlineAnnoPatient")
             .getFellow("fwinAnnotationInline").getAttributeOrFellow("fwinAnnotationInline$composer", true));
-      }else{
+      }else if(null != fichePatientDiv.getFellowIfAny("fwinPatientEditOFSEP")
+    	         && null != fichePatientDiv.getFellow("fwinPatientEditOFSEP").getFellowIfAny("ficheTissuInlineAnnoPatient")){
+          return ((FicheAnnotationInline) fichePatientDiv.getFellow("fwinPatientEditOFSEP").getFellow("ficheTissuInlineAnnoPatient")
+             .getFellow("fwinAnnotationInline").getAttributeOrFellow("fwinAnnotationInline$composer", true));
+       }else{
          return null;
       }
    }
@@ -746,17 +794,22 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
    private void displayEmbeddedPatient(final boolean show, final Patient pat){
       self.getFellow("newPatientDiv").setVisible(show);
       if(show){
+    	 
          Components.removeAllChildren(fichePatientDiv);
          if(BTO.equals(getCurrentContexte())){
             Executions.createComponents("/zuls/patient/bto/FichePatientEditBTO.zul", fichePatientDiv, null);
             ((FichePatientEditBTO) fichePatientDiv.getFellow("fwinPatientEditBTO")
                .getAttributeOrFellow("fwinPatientEditBTO$composer", true)).setEmbedded(pat);
-         }else{
+         }else if(OFSEP.equals(getCurrentContexte())){
+             Executions.createComponents("/zuls/patient/ofsep/FichePatientEditOFSEP.zul", fichePatientDiv, null);
+             ((FichePatientEditOFSEP) fichePatientDiv.getFellow("fwinPatientEditOFSEP")
+                .getAttributeOrFellow("fwinPatientEditOFSEP$composer", true)).setEmbedded(pat);
+          }else{
             Executions.createComponents("/zuls/patient/FichePatientEdit.zul", fichePatientDiv, null);
             ((FichePatientEdit) fichePatientDiv.getFellow("fwinPatientEdit").getAttributeOrFellow("fwinPatientEdit$composer",
                true)).setEmbedded(pat);
          }
-
+         
          Components.removeAllChildren(embeddedFicheMaladieDiv);
          createMaladieComponent(ficheMaladieWithPatientDiv);
 
@@ -767,7 +820,7 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
          //									ficheMaladieWithPatientDiv, null);
          ((FicheMaladie) ficheMaladieWithPatientDiv.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer", true))
             .setEmbedded(true);
-
+         
          if(SessionUtils.getSelectedBanques(sessionScope).get(0).getDefMaladies()){
             // affiche le bloc div
             // TODO : A quoi ça sert? - JDI
@@ -783,13 +836,18 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
                true)).getObject()).setSystemeDefaut(true);
 
          }
-
+         
          // attribution du patient a la maladie embedded
          if(BTO.equals(getCurrentContexte())){
             (((FicheMaladie) ficheMaladieWithPatientDiv.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer",
                true)).getObject())
                   .setPatient(((FichePatientEditBTO) fichePatientDiv.getFellow("fwinPatientEditBTO")
                      .getAttributeOrFellow("fwinPatientEditBTO$composer", true)).getObject());
+         }else if(OFSEP.equals(getCurrentContexte())){
+             (((FicheMaladie) ficheMaladieWithPatientDiv.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer",
+               true)).getObject())
+                  .setPatient(((FichePatientEditOFSEP) fichePatientDiv.getFellow("fwinPatientEditOFSEP")
+                     .getAttributeOrFellow("fwinPatientEditOFSEP$composer", true)).getObject());
          }else{
             (((FicheMaladie) ficheMaladieWithPatientDiv.getFellow("fwinMaladie").getAttributeOrFellow("fwinMaladie$composer",
                true)).getObject())
@@ -797,6 +855,40 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
                      .getAttributeOrFellow("fwinPatientEdit$composer", true)).getObject());
          }
 
+         // Récupére l'id edmus dans la première partie du code prélévement 
+         //System.out.println("TEST load new patient 4");
+         if(OFSEP.equals(getCurrentContexte())){
+        	//System.out.println("TEST load new patient 4.1"); 
+        	final FichePrelevementEditOFSEP prlvEditOfsep = (FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true);
+        	if (prlvEditOfsep != null) {
+        		//System.out.println("TEST load new patient 4.2");
+        		if(prlvEditOfsep.codeBoxPrlvt.isValid()) {
+        			//System.out.println("TEST load new patient 4.2.0");
+        			String codePrlv = prlvEditOfsep.codeBoxPrlvt.getValue(); 
+        			//System.out.println("TEST load new patient 4.2.1");
+        			if(codePrlv != null && codePrlv.split("\\.") != null) {
+        				//System.out.println("TEST load new patient 4.2.2");
+        				if(codePrlv.split("\\.").length >0) {
+        					//System.out.println("TEST load new patient 4.3");
+        	    	    	String[] arrayCodePrvl = codePrlv.split("\\.");
+        	    	    	if(arrayCodePrvl != null) {
+	    	    	    		//System.out.println("TEST load new patient 4.4");
+	    	    	            String idEdmus = arrayCodePrvl[0];
+	    	    	        	final FichePatientEditOFSEP patEditOfsep = (FichePatientEditOFSEP) fichePatientDiv.getFellow("fwinPatientEditOFSEP").getAttributeOrFellow("fwinPatientEditOFSEP$composer", true);
+	    	      		        if(patEditOfsep != null) {
+	    	      		          //System.out.println("TEST load new patient 4.5");
+	    	      		          patEditOfsep.getNomBox().setValue(idEdmus);
+	    	      		          patEditOfsep.getNipBox().setValue(idEdmus);
+	    	      		          patEditOfsep.getPrenomBox().setValue(idEdmus);
+	    	      		        }
+        	    	    	}
+        				}
+        			}
+    	        }
+        	}
+         }
+         //System.out.println("TEST load new patient 5");
+         
          // efface la grid existing patient
          displayExistingPatient(false);
       }else{
@@ -804,10 +896,13 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
          Components.removeAllChildren(fichePatientDiv);
          Components.removeAllChildren(ficheMaladieWithPatientDiv);
       }
-
+      
       if(BTO.equals(getCurrentContexte())){
          ((FichePrelevementEditBTO) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditBTO$composer", true))
             .setPatientEmbedded(show);
+      }else if(OFSEP.equals(getCurrentContexte())){
+          ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true))
+          .setPatientEmbedded(show);
       }else{
          // informe la fiche prelevement de la presence du formulaire
          ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEdit$composer", true))
@@ -850,6 +945,9 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
          if(BTO.equals(getCurrentContexte())){
             ((FichePrelevementEditBTO) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditBTO$composer", true))
                .setMaladie(null);
+         }else if(OFSEP.equals(getCurrentContexte())){
+             ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true))
+             .setMaladie(null);
          }else{
             ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEdit$composer", true))
                .setMaladie(null);
@@ -863,6 +961,9 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
 
          if(BTO.equals(getCurrentContexte())){
             ((FichePrelevementEditBTO) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditBTO$composer", true))
+               .setMaladieEmbedded(false);
+         }else if(OFSEP.equals(getCurrentContexte())){
+            ((FichePrelevementEditOFSEP) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEditOFSEP$composer", true))
                .setMaladieEmbedded(false);
          }else{
             ((FichePrelevementEdit) self.getParent().getParent().getAttributeOrFellow("fwinPrelevementEdit$composer", true))
@@ -936,5 +1037,13 @@ public class ReferenceurPatient extends GenericForwardComposer<Component>
       if(div.getChildren().isEmpty()){
          Executions.createComponents(zulPath, div, null);
       }
+   }
+
+   public Textbox getNomNipNdaBox() {
+      return nomNipNdaBox;
+   }
+	
+   public void setNomNipNdaBox(Textbox nomNipNdaBox) {
+      this.nomNipNdaBox = nomNipNdaBox;
    }
 }
