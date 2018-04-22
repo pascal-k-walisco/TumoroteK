@@ -41,6 +41,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -233,7 +234,7 @@ public class Collaborateur implements TKdataObject, TKFantomableObject, java.io.
       this.etablissement = e;
    }
 
-   @ManyToMany(targetEntity = Coordonnee.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+   @ManyToMany(targetEntity = Coordonnee.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
    @JoinTable(name = "COLLABORATEUR_COORDONNEE", joinColumns = @JoinColumn(name = "COLLABORATEUR_ID"),
       inverseJoinColumns = @JoinColumn(name = "COORDONNEE_ID"))
    @OrderBy(value = "coordonneeId")

@@ -90,6 +90,8 @@ import fr.aphp.tumorotek.model.coeur.patient.Maladie;
 import fr.aphp.tumorotek.model.coeur.prelevement.LaboInter;
 import fr.aphp.tumorotek.model.coeur.prelevement.Prelevement;
 import fr.aphp.tumorotek.model.contexte.Banque;
+import fr.aphp.tumorotek.model.contexte.Collaborateur;
+import fr.aphp.tumorotek.model.contexte.Coordonnee;
 import fr.aphp.tumorotek.model.interfacage.PatientSip;
 import fr.aphp.tumorotek.model.interfacage.Recepteur;
 import fr.aphp.tumorotek.model.qualite.ObjetNonConforme;
@@ -727,10 +729,11 @@ public class PrelevementController extends AbstractObjectTabController
     * @param prelevements
     */
    public void generateAndOpenMail(final Map<Integer, Prelevement> prelevements) {
-	   String contact = getMailContact();
+	   String mainContact = getMailMainContact();
+	   String copyContacts = getMailCopyContacts();
 	   String subject = getMailSubject();
 	   String body = getMailBody(prelevements);
-	   openMailto(contact, subject, body);
+	   openMailto(mainContact, copyContacts, subject, body);
    }
    
    /**
@@ -738,10 +741,36 @@ public class PrelevementController extends AbstractObjectTabController
 	 * @param prelevements, la listes de prélèvements à confirmer
 	 * @return
 	 */
-   private String getMailContact() {
+   private String getMailMainContact() {
 	   Banque currentBanque = SessionUtils.getCurrentBanque(sessionScope);
 	   return currentBanque.getContactArc();
    }
+   
+   /**
+	 * Générer le contenu du mail pour confirmer la recéption des prélèvements
+	 * @param prelevements, la listes de prélèvements à confirmer
+	 * @return
+	 */
+  private String getMailCopyContacts() {
+	  String mails = "";
+	  Banque currentBanque = SessionUtils.getCurrentBanque(sessionScope);
+	  
+	  Collaborateur collaborateur = currentBanque.getCollaborateur();
+	  if(collaborateur!=null) {
+		  Set<Coordonnee> coordonnees = currentBanque.getCollaborateur().getCoordonnees();
+		  if(coordonnees != null) {
+			  int cpt = 0;
+			  for(Coordonnee coordonnee : coordonnees) {
+				  if(cpt>0) {
+					  mails += ";";
+				  }
+				  mails += coordonnee.getMail();
+				  cpt++;
+			  }
+		  }
+	  }
+	  return mails;
+  }
   
    /**
 	 * Générer le contenu du mail pour confirmer la recéption des prélèvements
@@ -780,7 +809,7 @@ public class PrelevementController extends AbstractObjectTabController
 	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgIdEdmus")+SYNTAX_WHITE + first.getMaladie().getPatient().getNom()+ SYNTAX_END_LINE;
 	  
 	  // Cohorte
-	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgIdCohorte")+SYNTAX_WHITE + "TODO" + SYNTAX_END_LINE;
+	  body += Labels.getLabel("fichePrelevement.afterCreatePrelevement.mail.msgIdCohorte")+SYNTAX_WHITE + SYNTAX_END_LINE;
 	  body += SYNTAX_END_LINE;
 	  
 	  // Liste des prelevements
@@ -920,36 +949,22 @@ public class PrelevementController extends AbstractObjectTabController
    * Ouvrir le client client mail de l'utilisateur avec un mail pré-construit
    * @param mailto
    */
-   private void openMailto(final String contact, final String subject, final String body) {
+   private void openMailto(final String mainContact, final String copyContacts, final String subject, final String body) {
 //	   String mailto = "mailto:"+contact+"?subject=encodeURI('"+subject+"')&body=encodeURI('"+body+"')";
 	   
 	   String javascript = 
-//	      "function replaceAll(str, find, replace) {"+
-//		  "  return str.replace(new RegExp(find, 'g'), replace);"+
-//		  "}"+
-//		  "String.prototype.replaceAll = function (find, replace) {"+
-//		  "    var str = this;"+
-//		  "    return str.replace(new RegExp(find, 'g'), replace);"+
-//	    "";"+
-			
     	  "var nodeA = document.createElement('a');"+
     	  
     	  "var attrId = document.createAttribute('id');"+
     	  "attrId.value = 'mailtoBtn';"+
     	  "nodeA.setAttributeNode(attrId);"+
     	  
-		  "var contact = '"+contact+"';"+
-		  "console.log('-------------------------');"+
-		  "console.log(contact);"+
+		  "var mainContact = '"+mainContact+"';"+
+		  "var copyContacts = '"+copyContacts+"';"+
 		  "var subject = encodeURIComponent('"+subject+"');"+
-		  "console.log('-------------------------');"+
-		  "console.log(subject);"+
 		  "var body = encodeURIComponent('"+body+"');"+
-		  "console.log('-------------------------');"+
-		  "console.log(body);"+
-    	  "var mailto = 'mailto:'+contact+'?subject='+subject+'&body='+body;"+
-    	  "console.log('-------------------------');"+
-		  "console.log(mailto);"+
+    	  "var mailto = 'mailto:'+mainContact+'?cc='+copyContacts+'&subject='+subject+'&body='+body;"+
+
     	  "var attrHref = document.createAttribute('href');"+
     	  "attrHref.value = mailto;"+
     	  "nodeA.setAttributeNode(attrHref);"+
@@ -969,7 +984,7 @@ public class PrelevementController extends AbstractObjectTabController
     	  "document.getElementById('mailtoBtn').remove();";
  	  Clients.evalJavaScript(javascript);
    }
-
+    
    /**
     * Si l'utilisateur a modifié le code d'un prélèvement, une
     * fenêtre sera affichée pour lui proposer d'afficher ses

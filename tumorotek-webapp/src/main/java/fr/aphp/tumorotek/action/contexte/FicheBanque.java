@@ -134,6 +134,7 @@ public class FicheBanque extends AbstractFicheCombineController
    private Label proprioLabel;
    private Label respLabel;
    private Label contactLabel;
+   private Label contactArcLabel;
    private Label defMaladieLabel;
    private Label defautLibLabel;
    private Label defautCodeLabel;
@@ -158,6 +159,7 @@ public class FicheBanque extends AbstractFicheCombineController
    private Combobox contactBox;
    private Div contactBoxDiv;
    private Textbox contactArcBox;
+   private Div contactArcBoxDiv;
    private Checkbox defMaladieBox;
    private Textbox defautLibBox;
    private Textbox defautCodeBox;
@@ -246,12 +248,12 @@ public class FicheBanque extends AbstractFicheCombineController
 
       // Initialisation des listes de composants
       setObjLabelsComponents(
-         new Component[] {this.nomLabel, this.idLabel, this.descrLabel, this.proprioLabel, this.respLabel, this.contactLabel,
+         new Component[] {this.nomLabel, this.idLabel, this.descrLabel, this.proprioLabel, this.respLabel, this.contactLabel, this.contactArcLabel,
             this.defMaladieLabel, this.defautLibLabel, this.defautCodeLabel, this.autoCrossLabel, this.contexteLabel,
             this.couleurEchanLabel, this.couleurDeriveLabel, this.menuBar, this.gridCatalogues, this.archiveLabel});
 
       setObjBoxsComponents(new Component[] {this.nomBox, this.idBox, this.descrBox, this.proprioBox, this.respBoxDiv,
-         this.contactBoxDiv, this.contactArcBox, this.defMaladieBox, this.defautLibBox, this.defautCodeBox, this.autoCrossBox, this.contexteBox,
+         this.contactBoxDiv, this.contactArcBoxDiv, this.defMaladieBox, this.defautLibBox, this.defautCodeBox, this.autoCrossBox, this.contexteBox,
          this.couleurEchanBox, this.couleurDeriveBox,
          //this.checkCataCol,
          this.cataloguesBox, this.archiveBox});
@@ -953,7 +955,7 @@ public class FicheBanque extends AbstractFicheCombineController
       proprioBox.setModel(new CustomSimpleListModel(nomsServices));
       collabBox.setModel(new CustomSimpleListModel(nomsAndPrenoms));
       contactBox.setModel(new CustomSimpleListModel(nomsAndPrenoms));
-
+      
       couleurEchanBox.setModel(new SimpleListModel<>(couleurs));
       couleurEchanBox.setSelectedIndex(couleurs.indexOf(selectedEchanCouleur));
       couleurDeriveBox.setModel(new SimpleListModel<>(couleurs));

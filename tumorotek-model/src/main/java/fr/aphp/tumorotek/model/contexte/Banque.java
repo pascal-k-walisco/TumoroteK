@@ -274,7 +274,7 @@ public class Banque implements TKFantomableObject, TKdataObject, java.io.Seriali
       this.defautMaladieCode = d;
    }
 
-   @ManyToOne
+   @ManyToOne()
    @JoinColumn(name = "COLLABORATEUR_ID", nullable = true)
    public Collaborateur getCollaborateur(){
       return collaborateur;
