@@ -213,9 +213,11 @@
 							<menuitem id="exportItemOfsep"
 								image="/images/icones/export.png"
 								label="${c:l('general.actions.exporterOfsep')}" disabled="true" />
+							<!--
 							<menuitem id="importItemOfsep"
 								image="/images/icones/export.png"
 								label="${c:l('general.actions.importerOfsep')}" disabled="true" />
+							-->
 						</menupopup>
 					</menu>
 				</menubar>

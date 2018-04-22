@@ -13,7 +13,7 @@ BEGIN
 	
 	CREATE TEMPORARY TABLE TMP_PATIENT_EXPORT (
 		PATIENT_ID int(10),
-		PATIENT_NIP varchar(20),
+		PATIENT_NIP varchar(50),
 --		NOM_NAISSANCE varchar(50) ,
 		PATIENT_NOM varchar(50),
 		PATIENT_PRENOM varchar(50),
@@ -21,7 +21,7 @@ BEGIN
 		PATIENT_DATE_NAISSANCE int(10),
 --		VILLE_NAISSANCE varchar(100),
 --		PAYS_NAISSANCE varchar(100),
-		PATIENT_ETAT char(10),
+		PATIENT_ETAT varchar(10),
 --		DATE_ETAT date,
 --		DATE_DECES date,
 --		MEDECIN_PATIENT varchar(300),
@@ -72,7 +72,6 @@ BEGIN
 		EXTRACT(YEAR FROM date_naissance),
 --		ville_naissance, 
 --		pays_naissance, 
-		--'Vivant'
 		patient_etat 
 --		date_etat, 
 --		date_deces,
@@ -306,8 +305,7 @@ BEGIN
 --		ct.type as 'Type_de_conditionnement', 
 --		p.condit_nbr as 'Nombre_de_prélevements',
 --		cm.milieu, 
-		'EN ATTENTE',
---		consent.type as 'Statut_juridique', 
+		consent.type as 'Statut_juridique', 
 --		p.consent_date as 'date_du_statut', 
 --		p.date_depart,
 --		tr.nom as 'Transporteur', 
