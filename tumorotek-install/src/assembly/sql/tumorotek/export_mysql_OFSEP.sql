@@ -193,16 +193,17 @@ BEGIN
 	ECHANTILLON_DELAI_CGL decimal(9,2),
 	ECHANTILLON_CONF_APRES_TTMT tinyint(1),
 	ECHANTILLON_CONF_CESSION tinyint(1),
+	ECHANTILLON_STATUT varchar(20),
     MALADIE_ID int(10),
     MALADIE_LIBELLE varchar(300),
 	MALADIE_CODE_MALADIE varchar(50) ,
-	MALADIE_DATE_DIAGNOSTIC date,
-	MALADIE_DATE_DEBUT date ,
+--	MALADIE_DATE_DIAGNOSTIC date,
+--	MALADIE_DATE_DEBUT date ,
 	MALADIE_MEDECIN_MALADIE varchar(300),	
-        PATIENT_ID int (10),
-		PRIMARY KEY (PRELEVEMENT_ID, ECHANTILLON_ID),
-		INDEX (PATIENT_ID),
-		INDEX (MALADIE_ID)
+    PATIENT_ID int (10),
+    PRIMARY KEY (PRELEVEMENT_ID, ECHANTILLON_ID),
+	INDEX (PATIENT_ID),
+	INDEX (MALADIE_ID)
 	)ENGINE=MYISAM, default character SET = utf8;
 
 END$$
@@ -267,12 +268,13 @@ BEGIN
 	    ECHANTILLON_CONF_APRES_TTMT,
 --	    ECHANTILLON_CONF_APRES_TTMT,
 	    ECHANTILLON_CONF_CESSION,    
---	     ECHANTILLON_CONF_CESSIONè,    
+--	     ECHANTILLON_CONF_CESSIONè, 
+		ECHANTILLON_STATUT,
 	    MALADIE_ID,
 	    MALADIE_LIBELLE,
 	    MALADIE_CODE_MALADIE,
-	    MALADIE_DATE_DIAGNOSTIC,
-	    MALADIE_DATE_DEBUT,
+--	    MALADIE_DATE_DIAGNOSTIC,
+--	    MALADIE_DATE_DEBUT,
 	    MALADIE_MEDECIN_MALADIE,
 	    PATIENT_ID)  
 	SELECT 
@@ -389,11 +391,12 @@ BEGIN
 		ec.delai_cgl as 'Délai de congélation échantillon',
 		ec.conforme_traitement as 'Echantillon conforme apèrs traitement',
 		ec.conforme_cession as 'Enchantillon conforme à la cession',
+		os.statut,
 		p.maladie_id, 
 		'SCLÉROSE EN PLAQUES', 
 		'G35', 
-		m.date_diagnostic, 
-		m.date_debut,
+--		m.date_diagnostic, 
+--		m.date_debut,
 		(
 			select GROUP_CONCAT(c.nom) 
 			FROM MALADIE_MEDECIN mm 
@@ -421,6 +424,7 @@ BEGIN
 		LEFT JOIN COLLABORATEUR coco ON p.operateur_id = coco.collaborateur_id
 		LEFT JOIN MALADIE m on p.maladie_id = m.maladie_id 
 		LEFT JOIN PATIENT pat ON m.patient_id = pat.patient_id 
+		LEFT JOIN OBJET_STATUT os ON ec.objet_statut_id = os.objet_statut_id 
 		WHERE p.banque_id = b.banque_id AND p.nature_id = n.nature_id AND ent.ENTITE_ID = 2 AND p.prelevement_id = id;
 		
 END$$
