@@ -151,9 +151,6 @@
 							<menuitem id="exportItem" image="/images/icones/export.png" 
 								label="${c:l('general.actions.exporter')}"
 								disabled="true"/>
-							<menuitem id="exportItemOfsep"
-								image="/images/icones/export.png"
-								label="${c:l('general.actions.exporterOfsep')}" disabled="true" />
 							<!--
 							<menuitem id="importItemOfsep"
 								image="/images/icones/export.png"

@@ -18,7 +18,7 @@ BEGIN
 		PATIENT_NOM varchar(50),
 		PATIENT_PRENOM varchar(50),
 		PATIENT_SEXE char(3),
-		PATIENT_DATE_NAISSANCE int(10),
+		PATIENT_DATE_NAISSANCE datetime,
 --		VILLE_NAISSANCE varchar(100),
 --		PAYS_NAISSANCE varchar(100),
 		PATIENT_ETAT varchar(10),
@@ -69,7 +69,7 @@ BEGIN
 		nom, 
 		nom, 
 		sexe, 
-		EXTRACT(YEAR FROM date_naissance),
+		date_naissance,
 --		ville_naissance, 
 --		pays_naissance, 
 		patient_etat 
