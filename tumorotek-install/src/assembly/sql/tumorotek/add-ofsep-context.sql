@@ -7,7 +7,7 @@ ALTER TABLE ITEM modify ITEM_ID int(10) NOT NULL auto_increment;
 
 -- Ajout du contexte OFSEP
 ALTER TABLE CONTEXTE modify CONTEXTE_ID int(10) NOT NULL auto_increment;
-INSERT INTO CONTEXTE (NOM,LIBELLE) VALUES ('OFSEP','OFSEP');
+INSERT INTO CONTEXTE (NOM, libelle) VALUES ('OFSEP','OFSEP');
 ALTER TABLE CONTEXTE modify CONTEXTE_ID int(10) NOT NULL;-- enleve l'auto_increment
 
 -- Catalogue d'annotations associé au contexte OFSEP
